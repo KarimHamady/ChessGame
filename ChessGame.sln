@@ -5,11 +5,6 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessGame", "ChessGame.csproj", "{B690FA46-E853-4204-8E27-FF7B53AD90E9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logic", "logic", "{A8BD7E11-AA73-472C-9F3C-B27A1C17D3BB}"
-	ProjectSection(SolutionItems) = preProject
-		logic.md = logic.md
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
