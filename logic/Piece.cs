@@ -14,7 +14,7 @@
     internal abstract class Piece
     {
         public PieceType pieceType = PieceType.None;
-        protected int[,] pieceMovements = { };
+        public Location[] pieceMovements = { };
         protected bool capturesLikeItsMove = false;
     }
 
@@ -24,13 +24,12 @@
         {
             pieceType = PieceType.Pawn;
 
-            pieceMovements = new int[,]
+            pieceMovements = new Location[]
             {
-            {1, 0}, // Move forward
-            {2, 0}, // Move forward (initial double move)
-            {-1, 0}, // Capture diagonally left
-            {-1, 0} // Capture diagonally right
-                    // Add other pawn moves as needed
+            new Location(1, 0), // Move forward
+            new Location(2, 0), // Move forward (initial double move)
+            new Location(1, -1), // Capture diagonally left
+            new Location(1, 1) // Capture diagonally right
             };
 
             capturesLikeItsMove = false;
@@ -43,16 +42,16 @@
         {
             pieceType = PieceType.Knight;
 
-            pieceMovements = new int[,]
+            pieceMovements = new Location[]
             {
-            {-2, -1},
-            {-2, 1},
-            {2, -1},
-            {2, 1},
-            {-1, -2},
-            {-1, 2},
-            {1, -2},
-            {1, 2}
+            new Location(-2, -1),
+            new Location(-2, 1),
+            new Location(2, -1),
+            new Location(2, 1),
+            new Location(-1, -2),
+            new Location(-1, 2),
+            new Location(1, -2),
+            new Location(1, 2)
             };
 
             capturesLikeItsMove = true;
@@ -65,12 +64,13 @@
         {
             pieceType = PieceType.Bishop;
 
-            pieceMovements = new int[,]
+            pieceMovements = new Location[32];
+            for (int movement = 0; movement < 32; movement += 4)
             {
-            {-1, -1},
-            {-1, 1},
-            {1, -1},
-            {1, 1}
+                pieceMovements[movement] = new Location(-movement / 4, -movement / 4);
+                pieceMovements[movement + 1] = new Location(movement / 4, -movement / 4);
+                pieceMovements[movement + 2] = new Location(-movement / 4, movement / 4);
+                pieceMovements[movement + 3] = new Location(movement / 4, movement / 4);
             };
 
             capturesLikeItsMove = true;
@@ -83,12 +83,12 @@
         {
             pieceType = PieceType.Rook;
 
-            pieceMovements = new int[,]
+            pieceMovements = new Location[]
             {
-            {-1, 0},
-            {1, 0},
-            {0, -1},
-            {0, 1}
+            new Location(-1, 0),
+            new Location(1, 0),
+            new Location(0, -1),
+            new Location(0, 1)
             };
 
             capturesLikeItsMove = true;
@@ -101,16 +101,16 @@
         {
             pieceType = PieceType.Queen;
 
-            pieceMovements = new int[,]
+            pieceMovements = new Location[]
             {
-            {-1, -1},
-            {-1, 1},
-            {1, -1},
-            {1, 1},
-            {-1, 0},
-            {1, 0},
-            {0, -1},
-            {0, 1}
+            new Location(-1, -1),
+            new Location(-1, 1),
+            new Location(1, -1),
+            new Location(1, 1),
+            new Location(-1, 0),
+            new Location(1, 0),
+            new Location(0, -1),
+            new Location(0, 1)
             };
 
             capturesLikeItsMove = true;
@@ -123,16 +123,16 @@
         {
             pieceType = PieceType.King;
 
-            pieceMovements = new int[,]
+            pieceMovements = new Location[]
             {
-            {-1, -1},
-            {-1, 0},
-            {-1, 1},
-            {0, -1},
-            {0, 1},
-            {1, -1},
-            {1, 0},
-            {1, 1}
+            new Location(-1, -1),
+            new Location(-1, 0),
+            new Location(-1, 1),
+            new Location(0, -1),
+            new Location(0, 1),
+            new Location(1, -1),
+            new Location(1, 0),
+            new Location(1, 1)
             };
 
             capturesLikeItsMove = true;
