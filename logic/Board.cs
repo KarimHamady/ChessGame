@@ -18,8 +18,8 @@ namespace ChessGame.logic
         private static Board gameBoard = null;
         public BoardSquare[,] matrix;
 
-        private const int NUMBER_OF_RANKS = 8;
-        private const int NUMBER_OF_FILES = 8;
+        public const int NUMBER_OF_RANKS = 8;
+        public const int NUMBER_OF_FILES = 8;
 
         private Board()
         {
@@ -50,8 +50,8 @@ namespace ChessGame.logic
             matrix[0, 0].AddPieceToSquare(new Rook());
             matrix[0, 1].AddPieceToSquare(new Knight());
             matrix[0, 2].AddPieceToSquare(new Bishop());
-            matrix[0, 3].AddPieceToSquare(new Queen());
-            matrix[0, 4].AddPieceToSquare(new King());
+            matrix[0, 3].AddPieceToSquare(new King());
+            matrix[0, 4].AddPieceToSquare(new Queen());
             matrix[0, 5].AddPieceToSquare(new Bishop());
             matrix[0, 6].AddPieceToSquare(new Knight());
             matrix[0, 7].AddPieceToSquare(new Rook());
@@ -72,8 +72,8 @@ namespace ChessGame.logic
             matrix[7, 0].AddPieceToSquare(new Rook());
             matrix[7, 1].AddPieceToSquare(new Knight());
             matrix[7, 2].AddPieceToSquare(new Bishop());
-            matrix[7, 3].AddPieceToSquare(new Queen());
-            matrix[7, 4].AddPieceToSquare(new King());
+            matrix[7, 3].AddPieceToSquare(new King());
+            matrix[7, 4].AddPieceToSquare(new Queen());
             matrix[7, 5].AddPieceToSquare(new Bishop());
             matrix[7, 6].AddPieceToSquare(new Knight());
             matrix[7, 7].AddPieceToSquare(new Rook());
