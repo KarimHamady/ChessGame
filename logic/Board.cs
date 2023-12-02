@@ -57,36 +57,38 @@ namespace ChessGame.logic
         private void addPiecesToBoard()
         {
             // Add white pieces on the first rank
-            matrix[0, 0].AddPieceToSquare(new Rook());
-            matrix[0, 1].AddPieceToSquare(new Knight());
-            matrix[0, 2].AddPieceToSquare(new Bishop());
-            matrix[0, 3].AddPieceToSquare(new King());
-            matrix[0, 4].AddPieceToSquare(new Queen());
-            matrix[0, 5].AddPieceToSquare(new Bishop());
-            matrix[0, 6].AddPieceToSquare(new Knight());
-            matrix[0, 7].AddPieceToSquare(new Rook());
+            Color pieceColor = Color.White;
+            matrix[0, 0].AddPieceToSquare(new Rook(pieceColor));
+            matrix[0, 1].AddPieceToSquare(new Knight(pieceColor));
+            matrix[0, 2].AddPieceToSquare(new Bishop(pieceColor));
+            matrix[0, 3].AddPieceToSquare(new King(pieceColor));
+            matrix[0, 4].AddPieceToSquare(new Queen(pieceColor));
+            matrix[0, 5].AddPieceToSquare(new Bishop(pieceColor));
+            matrix[0, 6].AddPieceToSquare(new Knight(pieceColor));
+            matrix[0, 7].AddPieceToSquare(new Rook(pieceColor));
 
             // Add white pawns on the second rank
             for (int file = 0; file < NUMBER_OF_FILES; file++)
             {
-                matrix[1, file].AddPieceToSquare(new Pawn());
+                matrix[1, file].AddPieceToSquare(new Pawn(pieceColor));
             }
 
             // Add black pawns on the seventh rank
+            pieceColor = Color.Black;
             for (int file = 0; file < NUMBER_OF_FILES; file++)
             {
-                matrix[6, file].AddPieceToSquare(new Pawn());
+                matrix[6, file].AddPieceToSquare(new Pawn(pieceColor));
             }
 
             // Add black pieces on the eighth rank
-            matrix[7, 0].AddPieceToSquare(new Rook());
-            matrix[7, 1].AddPieceToSquare(new Knight());
-            matrix[7, 2].AddPieceToSquare(new Bishop());
-            matrix[7, 3].AddPieceToSquare(new King());
-            matrix[7, 4].AddPieceToSquare(new Queen());
-            matrix[7, 5].AddPieceToSquare(new Bishop());
-            matrix[7, 6].AddPieceToSquare(new Knight());
-            matrix[7, 7].AddPieceToSquare(new Rook());
+            matrix[7, 0].AddPieceToSquare(new Rook(pieceColor));
+            matrix[7, 1].AddPieceToSquare(new Knight(pieceColor));
+            matrix[7, 2].AddPieceToSquare(new Bishop(pieceColor));
+            matrix[7, 3].AddPieceToSquare(new King(pieceColor));
+            matrix[7, 4].AddPieceToSquare(new Queen(pieceColor));
+            matrix[7, 5].AddPieceToSquare(new Bishop(pieceColor));
+            matrix[7, 6].AddPieceToSquare(new Knight(pieceColor));
+            matrix[7, 7].AddPieceToSquare(new Rook(pieceColor));
         }
 
         public void DisplayBoard()
