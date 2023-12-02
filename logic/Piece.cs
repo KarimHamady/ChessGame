@@ -14,7 +14,7 @@
     internal abstract class Piece
     {
         public PieceType pieceType = PieceType.None;
-        public Location[] pieceMovements = { };
+        public List<Location> pieceMovements = new List<Location>();
         protected bool capturesLikeItsMove = false;
     }
 
@@ -24,13 +24,10 @@
         {
             pieceType = PieceType.Pawn;
 
-            pieceMovements = new Location[]
-            {
-            new Location(1, 0), // Move forward
-            new Location(2, 0), // Move forward (initial double move)
-            new Location(1, -1), // Capture diagonally left
-            new Location(1, 1) // Capture diagonally right
-            };
+            pieceMovements.Add(new Location(1, 0)); // Move forward
+            pieceMovements.Add(new Location(2, 0)); // Move forward (initial double move)
+            pieceMovements.Add(new Location(1, -1)); // Capture diagonally left
+            pieceMovements.Add(new Location(1, 1)); // Capture diagonally right
 
             capturesLikeItsMove = false;
         }
@@ -42,17 +39,14 @@
         {
             pieceType = PieceType.Knight;
 
-            pieceMovements = new Location[]
-            {
-            new Location(-2, -1),
-            new Location(-2, 1),
-            new Location(2, -1),
-            new Location(2, 1),
-            new Location(-1, -2),
-            new Location(-1, 2),
-            new Location(1, -2),
-            new Location(1, 2)
-            };
+            pieceMovements.Add(new Location(-2, -1));
+            pieceMovements.Add(new Location(-2, 1));
+            pieceMovements.Add(new Location(2, -1));
+            pieceMovements.Add(new Location(2, 1));
+            pieceMovements.Add(new Location(-1, -2));
+            pieceMovements.Add(new Location(-1, 2));
+            pieceMovements.Add(new Location(1, -2));
+            pieceMovements.Add(new Location(1, 2));
 
             capturesLikeItsMove = true;
         }
@@ -64,13 +58,12 @@
         {
             pieceType = PieceType.Bishop;
 
-            pieceMovements = new Location[32];
-            for (int movement = 0; movement < 32; movement += 4)
+            for (int movement = 1; movement < 8; movement++)
             {
-                pieceMovements[movement] = new Location(-movement / 4, -movement / 4);
-                pieceMovements[movement + 1] = new Location(movement / 4, -movement / 4);
-                pieceMovements[movement + 2] = new Location(-movement / 4, movement / 4);
-                pieceMovements[movement + 3] = new Location(movement / 4, movement / 4);
+                pieceMovements.Add(new Location(-movement, -movement));
+                pieceMovements.Add(new Location(movement, -movement));
+                pieceMovements.Add(new Location(-movement, movement));
+                pieceMovements.Add(new Location(movement, movement));
             };
 
             capturesLikeItsMove = true;
@@ -83,13 +76,13 @@
         {
             pieceType = PieceType.Rook;
 
-            pieceMovements = new Location[]
+            for (int movement = 1; movement < 8; movement++)
             {
-            new Location(-1, 0),
-            new Location(1, 0),
-            new Location(0, -1),
-            new Location(0, 1)
-            };
+                pieceMovements.Add(new Location(movement, 0));
+                pieceMovements.Add(new Location(0, movement));
+                pieceMovements.Add(new Location(-movement, 0));
+                pieceMovements.Add(new Location(0, -movement));
+            }
 
             capturesLikeItsMove = true;
         }
@@ -101,16 +94,19 @@
         {
             pieceType = PieceType.Queen;
 
-            pieceMovements = new Location[]
+            for (int movement = 1; movement < 8; movement++)
             {
-            new Location(-1, -1),
-            new Location(-1, 1),
-            new Location(1, -1),
-            new Location(1, 1),
-            new Location(-1, 0),
-            new Location(1, 0),
-            new Location(0, -1),
-            new Location(0, 1)
+                //Bishop
+                pieceMovements.Add(new Location(-movement, -movement));
+                pieceMovements.Add(new Location(movement, -movement));
+                pieceMovements.Add(new Location(-movement, movement));
+                pieceMovements.Add(new Location(movement, movement));
+
+                // Rook
+                pieceMovements.Add(new Location(movement, 0));
+                pieceMovements.Add(new Location(0, movement));
+                pieceMovements.Add(new Location(-movement, 0));
+                pieceMovements.Add(new Location(0, -movement));
             };
 
             capturesLikeItsMove = true;
@@ -123,17 +119,14 @@
         {
             pieceType = PieceType.King;
 
-            pieceMovements = new Location[]
-            {
-            new Location(-1, -1),
-            new Location(-1, 0),
-            new Location(-1, 1),
-            new Location(0, -1),
-            new Location(0, 1),
-            new Location(1, -1),
-            new Location(1, 0),
-            new Location(1, 1)
-            };
+            pieceMovements.Add(new Location(-1, -1));
+            pieceMovements.Add(new Location(-1, 0));
+            pieceMovements.Add(new Location(-1, 1));
+            pieceMovements.Add(new Location(0, -1));
+            pieceMovements.Add(new Location(0, 1));
+            pieceMovements.Add(new Location(1, -1));
+            pieceMovements.Add(new Location(1, 0));
+            pieceMovements.Add(new Location(1, 1));
 
             capturesLikeItsMove = true;
         }

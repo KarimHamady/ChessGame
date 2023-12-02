@@ -11,9 +11,6 @@ namespace ChessGame
         {
             InitializeComponent();
 
-
-
-
             // Populate the chessboardPictureBoxes array
             for (int rank = 0; rank < Board.NUMBER_OF_RANKS; rank++)
             {
@@ -68,12 +65,12 @@ namespace ChessGame
                 if (clickedPiece != null)
                 {
                     // Get the possible movements for the clicked piece
-                    Location[] pieceMovements = clickedPiece.pieceMovements;
+                    List<Location> pieceMovements = clickedPiece.pieceMovements;
                     List<Location> possibleMovements = new List<Location>();
-                    for (int i = 0; i < pieceMovements.Length; i++)
+                    foreach (Location location in pieceMovements)
                     {
-                        int newRank = rank + pieceMovements[i].Rank;
-                        int newFile = file + pieceMovements[i].File;
+                        int newRank = rank + location.Rank;
+                        int newFile = file + location.File;
                         if (newRank >= 0 && newRank < Board.NUMBER_OF_RANKS && newFile >= 0 && newFile < Board.NUMBER_OF_FILES)
                             possibleMovements.Add(new Location(newRank, newFile));
                     }
