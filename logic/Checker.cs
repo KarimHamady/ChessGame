@@ -63,7 +63,7 @@
         {
             Location checkingPieceLocation = Game.checkingLocation;
             Piece checkingPiece = Board.GetBoard().matrix[checkingPieceLocation.Rank, checkingPieceLocation.File]._pieceOnSquare;
-            Location king = new Location(0, 3);
+            Location king = Game.playerTurnColor == Color.White ? new Location(0, 3) : new Location(7, 3); // Fixme
             List<Location> allowedLocations = Checker.GetAvailableMovesInDirection(checkingPieceLocation, directionMapper(king.Rank - checkingPieceLocation.Rank), directionMapper(king.File - checkingPieceLocation.File));
             pieceMovements.RemoveAll(location => location != Game.checkingLocation && !allowedLocations.Contains(location));
         }

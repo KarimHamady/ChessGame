@@ -39,6 +39,16 @@ namespace ChessGame
             // Return null if the image doesn't exist
             return null;
         }
+        public Label handleCheckMate()
+        {
+            Label checkmateLabel = new Label();
+            checkmateLabel.Text = "Checkmate!";
+            checkmateLabel.Font = new Font("Arial", 24, FontStyle.Bold); // Adjust font size and style
+            checkmateLabel.Location = new Point(700, 100);
+            checkmateLabel.AutoSize = true;
+
+            return checkmateLabel;
+        }
     }
 
     public partial class Form1 : Form
@@ -95,13 +105,18 @@ namespace ChessGame
                     if (Game.check)
                     {
                         if (clickedPiece is not King)
-                        {
                             Checker.removeInvalidMovesForCheck(possibleMovements);
-                        }
                         else
                             possibleMovements.RemoveAll(location => Game.attackLocations.Contains(location));
+
+                        if (possibleMovements.Count == 0)
+                        {
+                            Label checkmate = GUI.ChessGui().handleCheckMate();
+                            Controls.Add(checkmate);
+                            return;
+                        }
                     }
-                    // Update the colors of the corresponding squares to green
+
                     UpdateSquareColors(possibleMovements);
                     Game.clickedLocation = new Location(rank, file);
                     Game.possibleMovements = possibleMovements;
