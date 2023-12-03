@@ -64,7 +64,7 @@ namespace ChessGame
                 // Get the piece on the BoardSquare
                 Piece clickedPiece = gameBoard.matrix[rank, file]._pieceOnSquare;
 
-                if ((Game.clickedLocation.Rank == -1 && Game.clickedLocation.File == -1) || (clickedPiece != null && clickedPiece.pieceColor == Game.playerTurnColor))
+                if (clickedPiece != null && clickedPiece.pieceColor == Game.playerTurnColor)
                 {
                     // Get the possible movements for the clicked piece
                     List<Location> pieceMovements = clickedPiece.pieceMovements;
@@ -74,7 +74,7 @@ namespace ChessGame
                     Game.clickedLocation = new Location(rank, file);
                     Game.possibleMovements = possibleMovements;
                 }
-                else
+                else if (Game.clickedLocation.Rank != -1 && Game.clickedLocation.File != -1)
                 {
                     Location newLocation = new Location(rank, file);
                     if (Game.possibleMovements.Contains(newLocation))
@@ -83,6 +83,7 @@ namespace ChessGame
                         chessboardPictureBoxes[rank, file].Image = LoadPieceImage(gameBoard.matrix[rank, file]._pieceOnSquare);
                         chessboardPictureBoxes[Game.clickedLocation.Rank, Game.clickedLocation.File].Image = null;
                         Game.clickedLocation = new Location(-1, -1);
+                        ResetSquareColors();
                     }
 
                 }
