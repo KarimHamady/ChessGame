@@ -73,8 +73,13 @@
                     break; // Stop if the new location is outside the board
 
                 if (Board.GetBoard().matrix[newLocation.Rank, newLocation.File]._pieceOnSquare != null)
-                    break; // Stop if there is a piece in the way
-
+                {
+                    if (Board.GetBoard().matrix[newLocation.Rank, newLocation.File]._pieceOnSquare.pieceColor != Game.playerTurnColor)
+                    {
+                        pieceMovements.Add(newLocation);
+                        break; // Stop if there is a piece in the way unless it's opposite color
+                    }
+                }
                 pieceMovements.Add(newLocation);
             }
 
