@@ -82,7 +82,20 @@ namespace ChessGame
                         chessboardPictureBoxes[rank, file].Image = LoadPieceImage(gameBoard.matrix[rank, file]._pieceOnSquare);
                         chessboardPictureBoxes[Game.clickedLocation.Rank, Game.clickedLocation.File].Image = null;
                         Game.clickedLocation = new Location(-1, -1);
+
+                        List<Location> newPossibleMoves = Board.GetBoard().matrix[rank, file]._pieceOnSquare.getAvailableMovesOnBoard(newLocation);
                         ResetSquareColors();
+                        foreach (Location location in newPossibleMoves)
+                        {
+                            Piece piece = Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare;
+                            if (piece != null && piece is King && piece.pieceColor != Game.playerTurnColor)
+                            {
+                                chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
+                            }
+                        }
+
+                        Game.playerTurnColor = Game.playerTurnColor == Color.White ? Color.Black : Color.White;
+
                     }
 
                 }

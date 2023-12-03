@@ -5,6 +5,9 @@
         public static Location clickedLocation = new Location(-1, -1);
         public static List<Location> possibleMovements = new List<Location>();
         public static Color playerTurnColor = Color.White;
+
+        public static bool whitePlayerChecked = false;
+        public static bool blackPlayerChecked = false;
         public static void movePieceFromSquareToSquare(Location currentLocation, Location newLocation)
         {
             BoardSquare currentSquare = Board.GetBoard().matrix[currentLocation.Rank, currentLocation.File];
@@ -12,8 +15,6 @@
 
             newSquare.AddPieceToSquare(currentSquare._pieceOnSquare);
             currentSquare.RemovePieceFromSquare();
-
-            playerTurnColor = playerTurnColor == Color.White ? Color.Black : Color.White;
         }
     }
 }
