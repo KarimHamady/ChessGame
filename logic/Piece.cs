@@ -32,12 +32,21 @@
             List<Location> pieceMovements = new List<Location>();
 
             int rankDirection = this.pieceColor == Color.White ? 1 : -1;
-            pieceMovements.Add(currentLocation + new Location(rankDirection * 1, 0)); // Move forward
-            pieceMovements.Add(currentLocation + new Location(rankDirection * 2, 0)); // Move forward (initial double move)
+            Location forwardOne = currentLocation + new Location(rankDirection * 1, 0);
+            Piece piece;
+
+            piece = Board.GetBoard().matrix[forwardOne.Rank, forwardOne.File]._pieceOnSquare;
+            if (piece == null)
+                pieceMovements.Add(forwardOne); // Move forward
+
+            Location fowardTwo = currentLocation + new Location(rankDirection * 2, 0);
+            piece = Board.GetBoard().matrix[fowardTwo.Rank, fowardTwo.File]._pieceOnSquare;
+            if (piece == null && (rankDirection * currentLocation.Rank == 1 || currentLocation.Rank * rankDirection == -6))
+                pieceMovements.Add(fowardTwo); // Move forward (initial double move)
 
             // Pawn can only capture diagonal if there is an opponent piece
             Location diagonalLeft = currentLocation + new Location(rankDirection * 1, -1);
-            Piece piece = Board.GetBoard().matrix[diagonalLeft.Rank, diagonalLeft.File]._pieceOnSquare;
+            piece = Board.GetBoard().matrix[diagonalLeft.Rank, diagonalLeft.File]._pieceOnSquare;
             if (piece != null && piece.pieceColor != Game.playerTurnColor)
                 pieceMovements.Add(diagonalLeft); // Capture diagonally left
 
