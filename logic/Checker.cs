@@ -54,74 +54,10 @@
             }
         }*/
 
-        public static List<Location> GetAvailableMovesForPiece(Location currentLocation, Piece piece)
+        public static void removeInvalidMoves(List<Location> pieceMovements)
         {
-            List<Location> pieceMovements = new List<Location>();
-
-            switch (piece.pieceType)
-            {
-                case PieceType.Bishop:
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, -1)); // Top-left
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, 1));  // Top-right
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, -1));  // Bottom-left
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, 1));   // Bottom-right
-                    break;
-
-                case PieceType.Rook:
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 0, -1)); // Left
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 0, 1));  // Right
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, 0)); // Up
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, 0));  // Down
-                    break;
-
-                case PieceType.Queen:
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, -1)); // Top-left
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, 1));  // Top-right
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, -1));  // Bottom-left
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, 1));   // Bottom-right
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 0, -1)); // Left
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 0, 1));  // Right
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, 0)); // Up
-                    pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, 0));  // Down
-                    break;
-
-                case PieceType.King:
-                    pieceMovements.Add(currentLocation + new Location(-1, -1));
-                    pieceMovements.Add(currentLocation + new Location(-1, 0));
-                    pieceMovements.Add(currentLocation + new Location(-1, 1));
-                    pieceMovements.Add(currentLocation + new Location(0, -1));
-                    pieceMovements.Add(currentLocation + new Location(0, 1));
-                    pieceMovements.Add(currentLocation + new Location(1, -1));
-                    pieceMovements.Add(currentLocation + new Location(1, 0));
-                    pieceMovements.Add(currentLocation + new Location(1, 1));
-                    break;
-
-                case PieceType.Pawn:
-                    int rankDirection = piece.pieceColor == Color.White ? 1 : -1;
-                    pieceMovements.Add(currentLocation + new Location(rankDirection * 1, 0)); // Move forward
-                    pieceMovements.Add(currentLocation + new Location(rankDirection * 2, 0)); // Move forward (initial double move)
-                    pieceMovements.Add(currentLocation + new Location(rankDirection * 1, -1)); // Capture diagonally left
-                    pieceMovements.Add(currentLocation + new Location(rankDirection * 1, 1)); // Capture diagonally right
-                    break;
-
-                case PieceType.Knight:
-                    pieceMovements.Add(currentLocation + new Location(-2, -1));
-                    pieceMovements.Add(currentLocation + new Location(-2, 1));
-                    pieceMovements.Add(currentLocation + new Location(2, -1));
-                    pieceMovements.Add(currentLocation + new Location(2, 1));
-                    pieceMovements.Add(currentLocation + new Location(-1, -2));
-                    pieceMovements.Add(currentLocation + new Location(-1, 2));
-                    pieceMovements.Add(currentLocation + new Location(1, -2));
-                    pieceMovements.Add(currentLocation + new Location(1, 2));
-                    break;
-
-                default:
-                    // Handle unsupported piece types
-                    break;
-            }
             pieceMovements.RemoveAll(location => !Checker.isMoveWithinBoard(location));
             pieceMovements.RemoveAll(location => Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare != null ? Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare.pieceColor == Game.playerTurnColor : false);
-            return pieceMovements;
         }
 
 

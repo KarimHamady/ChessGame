@@ -67,8 +67,7 @@ namespace ChessGame
                 if (clickedPiece != null && clickedPiece.pieceColor == Game.playerTurnColor)
                 {
                     // Get the possible movements for the clicked piece
-                    List<Location> pieceMovements = clickedPiece.pieceMovements;
-                    List<Location> possibleMovements = Checker.GetAvailableMovesForPiece(new Location(rank, file), clickedPiece);
+                    List<Location> possibleMovements = clickedPiece.getAvailableMovesOnBoard(new Location(rank, file));
                     // Update the colors of the corresponding squares to green
                     UpdateSquareColors(possibleMovements);
                     Game.clickedLocation = new Location(rank, file);
