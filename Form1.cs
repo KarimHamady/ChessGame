@@ -2,11 +2,51 @@ using ChessGame.logic;
 
 namespace ChessGame
 {
+    public class GUI
+    {
+        private static GUI chessGUI = null;
+        public PictureBox[,] chessboardPictureBoxes = new PictureBox[Board.NUMBER_OF_RANKS, Board.NUMBER_OF_FILES];
+        private GUI()
+        { }
+        public static GUI ChessGui()
+        {
+            if (chessGUI == null)
+                chessGUI = new GUI();
+            return chessGUI;
+        }
+        public void updateImageAtLocation(Location location)
+        {
+            chessboardPictureBoxes[location.Rank, location.File].Image = LoadPieceImage(Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare);
+        }
+        public void removeImageAtLocation(Location location)
+        {
+            chessboardPictureBoxes[location.Rank, location.File].Image = null;
+        }
+        public Image LoadPieceImage(Piece piece)
+        {
+            if (piece == null)
+                return null;
+            char colorPrefix = piece.pieceColor == Color.White ? 'w' : 'b';
+            String name = Enum.GetName(typeof(PieceType), piece.pieceType);
+            // Assuming the piece images are stored in a "data" folder within your project
+            string imagePath = $"../../../data/{(name != null ? name.ToLower() : "")}_{colorPrefix}.png";
+
+            if (System.IO.File.Exists(imagePath))
+            {
+                return Image.FromFile(imagePath);
+            }
+
+            // Return null if the image doesn't exist
+            return null;
+        }
+    }
+
     public partial class Form1 : Form
     {
         const int SQUARE_SIZE = 80;
         Board gameBoard = Board.GetBoard();
-        PictureBox[,] chessboardPictureBoxes = new PictureBox[Board.NUMBER_OF_RANKS, Board.NUMBER_OF_FILES];
+        PictureBox[,] chessboardPictureBoxes = GUI.ChessGui().chessboardPictureBoxes;
+
         public Form1()
         {
             InitializeComponent();
@@ -26,7 +66,7 @@ namespace ChessGame
                         Location = new Point(file * SQUARE_SIZE, rank * SQUARE_SIZE),
                         BorderStyle = BorderStyle.FixedSingle,
                         BackColor = gameBoard.matrix[rank, file]._color == SquareColor.White ? Color.White : Color.Black,
-                        Image = LoadPieceImage(gameBoard.matrix[rank, file]._pieceOnSquare),
+                        Image = GUI.ChessGui().LoadPieceImage(gameBoard.matrix[rank, file]._pieceOnSquare),
                         SizeMode = PictureBoxSizeMode.StretchImage
                     };
                     chessboardPictureBoxes[rank, file].Click += PictureBox_Click;
@@ -34,23 +74,7 @@ namespace ChessGame
                 }
             }
         }
-        private Image LoadPieceImage(Piece piece)
-        {
-            if (piece == null)
-                return null;
-            char colorPrefix = piece.pieceColor == Color.White ? 'w' : 'b';
-            String name = Enum.GetName(typeof(PieceType), piece.pieceType);
-            // Assuming the piece images are stored in a "data" folder within your project
-            string imagePath = $"../../../data/{(name != null ? name.ToLower() : "")}_{colorPrefix}.png";
 
-            if (System.IO.File.Exists(imagePath))
-            {
-                return Image.FromFile(imagePath);
-            }
-
-            // Return null if the image doesn't exist
-            return null;
-        }
 
         private void PictureBox_Click(object sender, EventArgs e)
         {
@@ -88,12 +112,15 @@ namespace ChessGame
                     if (Game.possibleMovements.Contains(newLocation))
                     {
                         Game.movePieceFromSquareToSquare(Game.clickedLocation, new Location(rank, file));
-                        chessboardPictureBoxes[rank, file].Image = LoadPieceImage(gameBoard.matrix[rank, file]._pieceOnSquare);
-                        chessboardPictureBoxes[Game.clickedLocation.Rank, Game.clickedLocation.File].Image = null;
                         Game.clickedLocation = new Location(-1, -1);
 
                         List<Location> newPossibleMoves = Board.GetBoard().matrix[rank, file]._pieceOnSquare.getAvailableMovesOnBoard(newLocation);
                         ResetSquareColors();
+                        if (Game.check)
+                        {
+                            Game.checkingLocation = new Location(-1, -1);
+                            Game.check = false;
+                        }
                         foreach (Location location in newPossibleMoves)
                         {
                             Piece piece = Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare;
@@ -106,13 +133,11 @@ namespace ChessGame
                         }
                         Game.attackLocations = Game.getAllAttackedLocations();
                         Game.playerTurnColor = Game.playerTurnColor == Color.White ? Color.Black : Color.White;
-
                     }
-
                 }
-
             }
         }
+
 
         private void UpdateSquareColors(List<Location> locations)
         {
