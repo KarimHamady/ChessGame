@@ -211,6 +211,7 @@
             }
 
             Checker.removeInvalidMoves(pieceMovements);
+            pieceMovements.RemoveAll(location => Game.attackLocations.Contains(location));
             return pieceMovements;
         }
     }
