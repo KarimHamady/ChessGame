@@ -71,7 +71,9 @@ namespace ChessGame
                     if (Game.check)
                     {
                         if (clickedPiece is not King)
+                        {
                             Checker.removeInvalidMovesForCheck(possibleMovements);
+                        }
                         else
                             possibleMovements.RemoveAll(location => Game.attackLocations.Contains(location));
                     }

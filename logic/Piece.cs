@@ -93,6 +93,7 @@
 
     internal class Bishop : Piece
     {
+        List<Location> movementDirection = new List<Location> { new Location(-1, -1), new Location(-1, 1), new Location(1, -1), new Location(1, 1) };
         public Bishop(Color color)
         {
             pieceType = PieceType.Bishop;
@@ -104,10 +105,8 @@
         {
             List<Location> pieceMovements = new List<Location>();
 
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, -1)); // Top-left
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, 1));  // Top-right
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, -1));  // Bottom-left
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, 1));   // Bottom-right
+            foreach (Location movement in movementDirection)
+                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File));
 
             Checker.removeInvalidMoves(pieceMovements);
             return pieceMovements;
@@ -116,6 +115,7 @@
 
     internal class Rook : Piece
     {
+        List<Location> movementDirection = new List<Location> { new Location(0, -1), new Location(0, 1), new Location(-1, 0), new Location(1, 0) };
         public Rook(Color color)
         {
             pieceType = PieceType.Rook;
@@ -126,10 +126,8 @@
         {
             List<Location> pieceMovements = new List<Location>();
 
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 0, -1)); // Left
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 0, 1));  // Right
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, 0)); // Up
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, 0));  // Down
+            foreach (Location movement in movementDirection)
+                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File));
 
             Checker.removeInvalidMoves(pieceMovements);
             return pieceMovements;
@@ -138,6 +136,7 @@
 
     internal class Queen : Piece
     {
+        List<Location> movementDirection = new List<Location> { new Location(-1, -1), new Location(-1, 1), new Location(1, -1), new Location(1, 1), new Location(0, -1), new Location(0, 1), new Location(-1, 0), new Location(1, 0) };
         public Queen(Color color)
         {
             pieceType = PieceType.Queen;

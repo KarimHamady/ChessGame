@@ -61,7 +61,16 @@
         }
         public static void removeInvalidMovesForCheck(List<Location> pieceMovements)
         {
-            pieceMovements.RemoveAll(location => location != Game.checkingLocation);
+            Location checkingPieceLocation = Game.checkingLocation;
+            Piece checkingPiece = Board.GetBoard().matrix[checkingPieceLocation.Rank, checkingPieceLocation.File]._pieceOnSquare;
+            Location king = new Location(0, 3);
+            List<Location> allowedLocations = Checker.GetAvailableMovesInDirection(checkingPieceLocation, directionMapper(king.Rank - checkingPieceLocation.Rank), directionMapper(king.File - checkingPieceLocation.File));
+            pieceMovements.RemoveAll(location => location != Game.checkingLocation && !allowedLocations.Contains(location));
+        }
+
+        public static int directionMapper(int x)
+        {
+            return x > 0 ? +1 : x < 0 ? -1 : 0;
         }
 
         public static List<Location> GetAvailableMovesInDirection(Location currentLocation, int rowDirection, int colDirection)
