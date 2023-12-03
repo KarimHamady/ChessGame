@@ -59,7 +59,10 @@
             pieceMovements.RemoveAll(location => !Checker.isMoveWithinBoard(location));
             pieceMovements.RemoveAll(location => Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare != null ? Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare.pieceColor == Game.playerTurnColor : false);
         }
-
+        public static void removeInvalidMovesForCheck(List<Location> pieceMovements)
+        {
+            pieceMovements.RemoveAll(location => location != Game.checkingLocation);
+        }
 
         public static List<Location> GetAvailableMovesInDirection(Location currentLocation, int rowDirection, int colDirection)
         {
@@ -77,8 +80,9 @@
                     if (Board.GetBoard().matrix[newLocation.Rank, newLocation.File]._pieceOnSquare.pieceColor != Game.playerTurnColor)
                     {
                         pieceMovements.Add(newLocation);
-                        break; // Stop if there is a piece in the way unless it's opposite color
+                        // Stop if there is a piece in the way unless it's opposite color
                     }
+                    break;
                 }
                 pieceMovements.Add(newLocation);
             }

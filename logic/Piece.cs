@@ -46,15 +46,20 @@
 
             // Pawn can only capture diagonal if there is an opponent piece
             Location diagonalLeft = currentLocation + new Location(rankDirection * 1, -1);
-            piece = Board.GetBoard().matrix[diagonalLeft.Rank, diagonalLeft.File]._pieceOnSquare;
-            if (piece != null && piece.pieceColor != Game.playerTurnColor)
-                pieceMovements.Add(diagonalLeft); // Capture diagonally left
+            if (Checker.isMoveWithinBoard(diagonalLeft))
+            {
+                piece = Board.GetBoard().matrix[diagonalLeft.Rank, diagonalLeft.File]._pieceOnSquare;
+                if (piece != null && piece.pieceColor != Game.playerTurnColor)
+                    pieceMovements.Add(diagonalLeft); // Capture diagonally left
+            }
 
             Location diagonalRight = currentLocation + new Location(rankDirection * 1, 1);
-            piece = Board.GetBoard().matrix[diagonalRight.Rank, diagonalRight.File]._pieceOnSquare;
-            if (piece != null && piece.pieceColor != Game.playerTurnColor)
-                pieceMovements.Add(diagonalRight); // Capture diagonally right
-
+            if (Checker.isMoveWithinBoard(diagonalRight))
+            {
+                piece = Board.GetBoard().matrix[diagonalRight.Rank, diagonalRight.File]._pieceOnSquare;
+                if (piece != null && piece.pieceColor != Game.playerTurnColor)
+                    pieceMovements.Add(diagonalRight); // Capture diagonally right
+            }
             Checker.removeInvalidMoves(pieceMovements);
             return pieceMovements;
         }

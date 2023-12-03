@@ -68,6 +68,13 @@ namespace ChessGame
                 {
                     // Get the possible movements for the clicked piece
                     List<Location> possibleMovements = clickedPiece.getAvailableMovesOnBoard(new Location(rank, file));
+                    if (Game.check)
+                    {
+                        if (clickedPiece is not King)
+                            Checker.removeInvalidMovesForCheck(possibleMovements);
+                        else
+                            possibleMovements.RemoveAll(location => Game.attackLocations.Contains(location));
+                    }
                     // Update the colors of the corresponding squares to green
                     UpdateSquareColors(possibleMovements);
                     Game.clickedLocation = new Location(rank, file);
@@ -91,9 +98,11 @@ namespace ChessGame
                             if (piece != null && piece is King && piece.pieceColor != Game.playerTurnColor)
                             {
                                 chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
+                                Game.checkingLocation = new Location(rank, file);
+                                Game.check = true;
                             }
                         }
-
+                        Game.attackLocations = Game.getAllAttackedLocations();
                         Game.playerTurnColor = Game.playerTurnColor == Color.White ? Color.Black : Color.White;
 
                     }

@@ -22,6 +22,15 @@ namespace ChessGame.logic
             return new Location(a.Rank + b.Rank, a.File + b.File);
         }
 
+        public static bool operator ==(Location a, Location b)
+        {
+            return a.Rank == b.Rank && a.File == b.File;
+        }
+        public static bool operator !=(Location a, Location b)
+        {
+            return !(a.Rank == b.Rank && a.File == b.File);
+        }
+
     }
     internal class Board
     {
