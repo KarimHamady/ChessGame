@@ -2,12 +2,6 @@
 
 namespace ChessGame.logic
 {
-    enum SquareColor
-    {
-        Black,
-        White
-    }
-
     public struct Location
     {
         public int Rank { get; set; }
@@ -58,7 +52,7 @@ namespace ChessGame.logic
             {
                 for (int file = 0; file < NUMBER_OF_FILES; file++)
                 {
-                    SquareColor color = (rank + file) % 2 == 0 ? SquareColor.White : SquareColor.Black;
+                    Color color = (rank + file) % 2 == 0 ? Color.White : Color.Black;
                     matrix[rank, file] = new BoardSquare(color);
                 }
             }
@@ -67,14 +61,14 @@ namespace ChessGame.logic
         {
             // Add white pieces on the first rank
             Color pieceColor = Color.White;
-            matrix[0, 0].AddPieceToSquare(new Rook(pieceColor, RookSide.KingSide));
+            matrix[0, 0].AddPieceToSquare(new Rook(pieceColor, statics.RookSide.KingSide));
             matrix[0, 1].AddPieceToSquare(new Knight(pieceColor));
             matrix[0, 2].AddPieceToSquare(new Bishop(pieceColor));
             matrix[0, 3].AddPieceToSquare(new King(pieceColor));
             matrix[0, 4].AddPieceToSquare(new Queen(pieceColor));
             matrix[0, 5].AddPieceToSquare(new Bishop(pieceColor));
             matrix[0, 6].AddPieceToSquare(new Knight(pieceColor));
-            matrix[0, 7].AddPieceToSquare(new Rook(pieceColor, RookSide.QueenSide));
+            matrix[0, 7].AddPieceToSquare(new Rook(pieceColor, statics.RookSide.QueenSide));
 
             // Add white pawns on the second rank
             for (int file = 0; file < NUMBER_OF_FILES; file++)
@@ -90,14 +84,14 @@ namespace ChessGame.logic
             }
 
             // Add black pieces on the eighth rank
-            matrix[7, 0].AddPieceToSquare(new Rook(pieceColor, RookSide.KingSide));
+            matrix[7, 0].AddPieceToSquare(new Rook(pieceColor, statics.RookSide.KingSide));
             matrix[7, 1].AddPieceToSquare(new Knight(pieceColor));
             matrix[7, 2].AddPieceToSquare(new Bishop(pieceColor));
             matrix[7, 3].AddPieceToSquare(new King(pieceColor));
             matrix[7, 4].AddPieceToSquare(new Queen(pieceColor));
             matrix[7, 5].AddPieceToSquare(new Bishop(pieceColor));
             matrix[7, 6].AddPieceToSquare(new Knight(pieceColor));
-            matrix[7, 7].AddPieceToSquare(new Rook(pieceColor, RookSide.QueenSide));
+            matrix[7, 7].AddPieceToSquare(new Rook(pieceColor, statics.RookSide.QueenSide));
         }
 
         public void DisplayBoard()
@@ -133,15 +127,15 @@ namespace ChessGame.logic
 
     internal class BoardSquare
     {
-        public SquareColor _color;
+        public Color _color;
         public Piece _pieceOnSquare = null;
 
-        public BoardSquare(SquareColor color)
+        public BoardSquare(Color color)
         {
             _color = color;
         }
 
-        public BoardSquare(SquareColor color, Piece pieceOnSquare) : this(color)
+        public BoardSquare(Color color, Piece pieceOnSquare) : this(color)
         {
             _pieceOnSquare = pieceOnSquare;
         }

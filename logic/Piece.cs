@@ -1,25 +1,11 @@
 ﻿namespace ChessGame.logic
 {
-    public enum PieceType
-    {
-        None,
-        Pawn,
-        Knight,
-        Bishop,
-        Rook,
-        Queen,
-        King
-    }
 
-    enum RookSide
-    {
-        KingSide,
-        QueenSide
-    }
+
 
     public abstract class Piece
     {
-        public PieceType pieceType = PieceType.None;
+        public statics.PieceType pieceType = statics.PieceType.None;
         public Color pieceColor;
         protected bool capturesLikeItsMove = false;
         public abstract List<Location> getAvailableMovesOnBoard(Location currentLocation);
@@ -29,7 +15,7 @@
     {
         public Pawn(Color color)
         {
-            pieceType = PieceType.Pawn;
+            pieceType = statics.PieceType.Pawn;
             pieceColor = color;
             capturesLikeItsMove = false;
         }
@@ -75,7 +61,7 @@
     {
         public Knight(Color color)
         {
-            pieceType = PieceType.Knight;
+            pieceType = statics.PieceType.Knight;
             pieceColor = color;
             capturesLikeItsMove = true;
         }
@@ -102,7 +88,7 @@
         List<Location> movementDirection = new List<Location> { new Location(-1, -1), new Location(-1, 1), new Location(1, -1), new Location(1, 1) };
         public Bishop(Color color)
         {
-            pieceType = PieceType.Bishop;
+            pieceType = statics.PieceType.Bishop;
             pieceColor = color;
             capturesLikeItsMove = true;
         }
@@ -123,11 +109,11 @@
     {
         List<Location> movementDirection = new List<Location> { new Location(0, -1), new Location(0, 1), new Location(-1, 0), new Location(1, 0) };
         public bool hasMoved = false;
-        public RookSide _rookSide;
+        public statics.RookSide _rookSide;
 
-        public Rook(Color color, RookSide rookSide)
+        public Rook(Color color, statics.RookSide rookSide)
         {
-            pieceType = PieceType.Rook;
+            pieceType = statics.PieceType.Rook;
             pieceColor = color;
             capturesLikeItsMove = true;
             _rookSide = rookSide;
@@ -151,7 +137,7 @@
         List<Location> movementDirection = new List<Location> { new Location(-1, -1), new Location(-1, 1), new Location(1, -1), new Location(1, 1), new Location(0, -1), new Location(0, 1), new Location(-1, 0), new Location(1, 0) };
         public Queen(Color color)
         {
-            pieceType = PieceType.Queen;
+            pieceType = statics.PieceType.Queen;
             pieceColor = color;
             capturesLikeItsMove = true;
         }
@@ -178,7 +164,7 @@
         public bool hasMoved = false;
         public King(Color color)
         {
-            pieceType = PieceType.King;
+            pieceType = statics.PieceType.King;
             pieceColor = color;
             capturesLikeItsMove = true;
         }
@@ -195,20 +181,25 @@
             pieceMovements.Add(currentLocation + new Location(1, 0));
             pieceMovements.Add(currentLocation + new Location(1, 1));
 
-            if (Game.playerTurnColor == Color.White)
+            if (!Game.check)
             {
-                if (Game.whiteCastlingAllowedKingSide == true)
-                    pieceMovements.Add(currentLocation + new Location(0, -2));
-                else if (Game.whiteCastlingAllowedQueenSide == true)
-                    pieceMovements.Add(currentLocation + new Location(0, 2));
+                // FIXME Check if a piece is blocking the castling (+1, -1) before allowing (+2, -2) using attackedLocations list
+                if (Game.playerTurnColor == Color.White)
+                {
+                    if (Game.whiteCastlingAllowedKingSide == true)
+                        pieceMovements.Add(currentLocation + new Location(0, -2));
+                    if (Game.whiteCastlingAllowedQueenSide == true)
+                        pieceMovements.Add(currentLocation + new Location(0, 2));
+                }
+                else if (Game.playerTurnColor == Color.Black)
+                {
+                    if (Game.blackCastlingAllowedKingSide == true)
+                        pieceMovements.Add(currentLocation + new Location(0, -2));
+                    if (Game.blackCastlingAllowedQueenSide == true)
+                        pieceMovements.Add(currentLocation + new Location(0, 2));
+                }
             }
-            else if (Game.playerTurnColor == Color.Black)
-            {
-                if (Game.blackCastlingAllowedKingSide == true)
-                    pieceMovements.Add(currentLocation + new Location(0, -2));
-                else if (Game.blackCastlingAllowedQueenSide == true)
-                    pieceMovements.Add(currentLocation + new Location(0, 2));
-            }
+
 
             Checker.removeInvalidMoves(pieceMovements);
             pieceMovements.RemoveAll(location => Game.attackLocations.Contains(location));

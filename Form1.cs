@@ -2,60 +2,11 @@ using ChessGame.logic;
 
 namespace ChessGame
 {
-    public class GUI
-    {
-        private static GUI chessGUI = null;
-        public PictureBox[,] chessboardPictureBoxes = new PictureBox[Board.NUMBER_OF_RANKS, Board.NUMBER_OF_FILES];
-        private GUI()
-        { }
-        public static GUI ChessGui()
-        {
-            if (chessGUI == null)
-                chessGUI = new GUI();
-            return chessGUI;
-        }
-        public void updateImageAtLocation(Location location)
-        {
-            chessboardPictureBoxes[location.Rank, location.File].Image = LoadPieceImage(Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare);
-        }
-        public void removeImageAtLocation(Location location)
-        {
-            chessboardPictureBoxes[location.Rank, location.File].Image = null;
-        }
-        public Image LoadPieceImage(Piece piece)
-        {
-            if (piece == null)
-                return null;
-            char colorPrefix = piece.pieceColor == Color.White ? 'w' : 'b';
-            String name = Enum.GetName(typeof(PieceType), piece.pieceType);
-            // Assuming the piece images are stored in a "data" folder within your project
-            string imagePath = $"../../../data/{(name != null ? name.ToLower() : "")}_{colorPrefix}.png";
-
-            if (System.IO.File.Exists(imagePath))
-            {
-                return Image.FromFile(imagePath);
-            }
-
-            // Return null if the image doesn't exist
-            return null;
-        }
-        public Label handleCheckMate()
-        {
-            Label checkmateLabel = new Label();
-            checkmateLabel.Text = "Checkmate!";
-            checkmateLabel.Font = new Font("Arial", 24, FontStyle.Bold); // Adjust font size and style
-            checkmateLabel.Location = new Point(700, 100);
-            checkmateLabel.AutoSize = true;
-
-            return checkmateLabel;
-        }
-    }
-
     public partial class Form1 : Form
     {
         const int SQUARE_SIZE = 80;
         Board gameBoard = Board.GetBoard();
-        PictureBox[,] chessboardPictureBoxes = GUI.ChessGui().chessboardPictureBoxes;
+        PictureBox[,] chessboardPictureBoxes = view.GUI.ChessGui().chessboardPictureBoxes;
 
         public Form1()
         {
@@ -75,8 +26,8 @@ namespace ChessGame
                         Size = new Size(SQUARE_SIZE, SQUARE_SIZE),
                         Location = new Point(file * SQUARE_SIZE, rank * SQUARE_SIZE),
                         BorderStyle = BorderStyle.FixedSingle,
-                        BackColor = gameBoard.matrix[rank, file]._color == SquareColor.White ? Color.White : Color.Black,
-                        Image = GUI.ChessGui().LoadPieceImage(gameBoard.matrix[rank, file]._pieceOnSquare),
+                        BackColor = gameBoard.matrix[rank, file]._color,
+                        Image = view.GUI.ChessGui().LoadPieceImage(gameBoard.matrix[rank, file]._pieceOnSquare),
                         SizeMode = PictureBoxSizeMode.StretchImage
                     };
                     chessboardPictureBoxes[rank, file].Click += PictureBox_Click;
@@ -104,20 +55,17 @@ namespace ChessGame
                     List<Location> possibleMovements = clickedPiece.getAvailableMovesOnBoard(new Location(rank, file));
                     if (Game.check)
                     {
-                        if (clickedPiece is not King)
-                            Checker.removeInvalidMovesForCheck(possibleMovements);
-                        else
-                            possibleMovements.RemoveAll(location => Game.attackLocations.Contains(location));
-
+                        LimitPiecesMovements(clickedPiece, possibleMovements);
                         if (possibleMovements.Count == 0)
                         {
-                            Label checkmate = GUI.ChessGui().handleCheckMate();
+                            Label checkmate = view.GUI.ChessGui().handleCheckMate();
                             Controls.Add(checkmate);
                             return;
                         }
                     }
 
-                    UpdateSquareColors(possibleMovements);
+                    ResetSquareColors();
+                    ColorLocations(possibleMovements, Color.Green);
                     Game.clickedLocation = new Location(rank, file);
                     Game.possibleMovements = possibleMovements;
                 }
@@ -127,16 +75,13 @@ namespace ChessGame
                     if (Game.possibleMovements.Contains(newLocation))
                     {
                         Game.movePieceFromSquareToSquare(Game.clickedLocation, new Location(rank, file));
-                        Game.clickedLocation = new Location(-1, -1);
+                        Game.UpdateCastlingCondition(gameBoard.matrix[Game.clickedLocation.Rank, Game.clickedLocation.File]);
+                        if (gameBoard.matrix[newLocation.Rank, newLocation.File]._pieceOnSquare is King)
+                            Game.CheckAndHandleCastling(Game.clickedLocation, newLocation);
 
-                        List<Location> newPossibleMoves = Board.GetBoard().matrix[rank, file]._pieceOnSquare.getAvailableMovesOnBoard(newLocation);
                         ResetSquareColors();
-                        if (Game.check)
-                        {
-                            Game.checkingLocation = new Location(-1, -1);
-                            Game.check = false;
-                        }
-                        foreach (Location location in newPossibleMoves)
+                        Game.ResetGameCheckVariables();
+                        foreach (Location location in Board.GetBoard().matrix[rank, file]._pieceOnSquare.getAvailableMovesOnBoard(newLocation))
                         {
                             Piece piece = Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare;
                             if (piece != null && piece is King && piece.pieceColor != Game.playerTurnColor)
@@ -154,39 +99,32 @@ namespace ChessGame
         }
 
 
-        private void UpdateSquareColors(List<Location> locations)
+        private void ColorLocations(List<Location> locations, Color color)
         {
-            // Reset all square colors to their original colors
-            ResetSquareColors();
-
-            // Update the colors of squares with valid moves to green
             foreach (Location location in locations)
-            {
-                chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Green;
-            }
+                chessboardPictureBoxes[location.Rank, location.File].BackColor = color;
         }
 
         private void ResetSquareColors()
         {
-            // Reset all square colors to their original colors
             for (int rank = 0; rank < Board.NUMBER_OF_RANKS; rank++)
-            {
                 for (int file = 0; file < Board.NUMBER_OF_FILES; file++)
-                {
-                    chessboardPictureBoxes[rank, file].BackColor = gameBoard.matrix[rank, file]._color == SquareColor.White ? Color.White : Color.Black;
-                }
-            }
+                    chessboardPictureBoxes[rank, file].BackColor = gameBoard.matrix[rank, file]._color;
         }
+
+        public void LimitPiecesMovements(Piece clickedPiece, List<Location> possibleMovements)
+        {
+            if (clickedPiece is not King)
+                Checker.removeInvalidMovesForCheck(possibleMovements);
+            else
+                possibleMovements.RemoveAll(location => Game.attackLocations.Contains(location));
+        }
+
 
         public void ResetPiecesPictures()
         {
-            for (int rank = 0; rank < Board.NUMBER_OF_RANKS; rank++)
-            {
-                for (int file = 0; file < Board.NUMBER_OF_FILES; file++)
-                {
-                    chessboardPictureBoxes[rank, file].Image = null;
-                }
-            }
+            foreach (PictureBox pictureBox in chessboardPictureBoxes)
+                pictureBox.Image = null;
         }
 
     }

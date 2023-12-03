@@ -26,7 +26,7 @@ public class KnightFactory : IPieceFactory
 // ... Repeat the pattern for other piece types
 
 // Usage:
-IPieceFactory factory = GetFactoryForPieceType(PieceType.Pawn);
+IPieceFactory factory = GetFactoryForPieceType(statics.PieceType.Pawn);
 Piece pawn = factory.CreatePiece(Color.White);
 
 ---------------------------------------------------------------- Strategy Pattern

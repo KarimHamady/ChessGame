@@ -2,6 +2,7 @@
 {
     internal class Game
     {
+
         public static Location clickedLocation = new Location(-1, -1);
         public static List<Location> possibleMovements = new List<Location>();
         public static Color playerTurnColor = Color.White;
@@ -19,18 +20,35 @@
             BoardSquare currentSquare = Board.GetBoard().matrix[currentLocation.Rank, currentLocation.File];
             BoardSquare newSquare = Board.GetBoard().matrix[newLocation.Rank, newLocation.File];
 
-            UpdateCastlingCondition(currentSquare);
-            if (currentSquare._pieceOnSquare is King)
-            {
-                if (currentLocation.File - newLocation.File == 2)
-                    Game.movePieceFromSquareToSquare(new Location(0, 0), new Location(newLocation.Rank, newLocation.File + 1));
-                else if (newLocation.File - currentLocation.File == 2)
-                    Game.movePieceFromSquareToSquare(new Location(0, 7), new Location(newLocation.Rank, newLocation.File - 1));
-            }
             newSquare.AddPieceToSquare(currentSquare._pieceOnSquare);
-            GUI.ChessGui().updateImageAtLocation(newLocation);
             currentSquare.RemovePieceFromSquare();
-            GUI.ChessGui().removeImageAtLocation(currentLocation);
+
+            view.GUI.ChessGui().updateImageAtLocation(newLocation);
+            view.GUI.ChessGui().removeImageAtLocation(currentLocation);
+        }
+
+        private static bool IsKingSideCastling(Location currentKingLocation, Location newKingLocation)
+        {
+            return currentKingLocation.File - newKingLocation.File == 2;
+        }
+        private static bool IsQueenSideCastling(Location currentKingLocation, Location newKingLocation)
+        {
+            return newKingLocation.File - currentKingLocation.File == 2;
+        }
+        private static void MoveRookBesideKing(Location kingLocation)
+        {
+            Game.movePieceFromSquareToSquare(statics.InitialPieceLocations.GetRookLocationFromCastlingSide(statics.CastlingSide.KingSide), new Location(kingLocation.Rank, kingLocation.File + 1));
+        }
+        private static void MoveRookBesideQueen(Location kingLocation)
+        {
+            Game.movePieceFromSquareToSquare(statics.InitialPieceLocations.GetRookLocationFromCastlingSide(statics.CastlingSide.QueenSide), new Location(kingLocation.Rank, kingLocation.File - 1));
+        }
+        public static void CheckAndHandleCastling(Location currentLocation, Location newLocation)
+        {
+            if (IsKingSideCastling(currentLocation, newLocation))
+                MoveRookBesideKing(newLocation);
+            else if (IsQueenSideCastling(currentLocation, newLocation))
+                MoveRookBesideQueen(newLocation);
         }
         public static void UpdateCastlingCondition(BoardSquare currentSquare)
         {
@@ -56,19 +74,25 @@
                 piece.hasMoved = true;
                 if (playerTurnColor == Color.White)
                 {
-                    if (piece._rookSide == RookSide.KingSide)
+                    if (piece._rookSide == statics.RookSide.KingSide)
                         Game.whiteCastlingAllowedKingSide = false;
-                    else if (piece._rookSide == RookSide.QueenSide)
+                    else if (piece._rookSide == statics.RookSide.QueenSide)
                         Game.whiteCastlingAllowedQueenSide = false;
                 }
                 else
                 {
-                    if (piece._rookSide == RookSide.KingSide)
+                    if (piece._rookSide == statics.RookSide.KingSide)
                         Game.blackCastlingAllowedKingSide = false;
-                    else if (piece._rookSide == RookSide.QueenSide)
+                    else if (piece._rookSide == statics.RookSide.QueenSide)
                         Game.blackCastlingAllowedQueenSide = false;
                 }
             }
+        }
+        public static void ResetGameCheckVariables()
+        {
+            Game.clickedLocation = new Location(-1, -1);
+            Game.checkingLocation = new Location(-1, -1);
+            Game.check = false;
         }
         public static List<Location> getAllAttackedLocations()
         {
