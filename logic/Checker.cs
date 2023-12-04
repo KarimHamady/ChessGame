@@ -1,118 +1,122 @@
-﻿
-using ChessGame.global;
+﻿using ChessGame.Global;
+using ChessGame.Logic.PieceNamespace;
+using ChessGame.Statics;
+using ChessGame.Logic.BoardNamespace;
 
-namespace ChessGame.logic
+namespace ChessGame.Logic
 {
-    internal class Checker
-    {
-        public bool isMoveValid(Location newLocation)
+    namespace CheckerNamespace { 
+        internal class Checker
         {
-            if (!isMoveWithinBoard(newLocation))
+            public bool IsMoveValid(Location newLocation)
+            {
+                if (!IsMoveWithinBoard(newLocation))
+                    return false;
+                if (IsKingChecked())
+                    return IsMoveValidWhenKingChecked();
+                if (IsPiecePinned())
+                    return IsMoveValidWhenPiecePinned();
                 return false;
-            if (isKingChecked())
-                return isMoveValidWhenKingChecked();
-            if (isPiecePinned())
-                return isMoveValidWhenPiecePinned();
-            return false;
-        }
-
-        public static bool isMoveWithinBoard(Location newLocation)
-        {
-            return newLocation.Rank >= 0 && newLocation.Rank < Board.NUMBER_OF_RANKS && newLocation.File >= 0 && newLocation.File < Board.NUMBER_OF_FILES;
-        }
-        public bool isKingChecked()
-        {
-            return false;
-        }
-        public bool isPiecePinned()
-        {
-            return false;
-        }
-        public bool isMoveValidWhenKingChecked()
-        {
-            return true;
-        }
-
-        public bool isMoveValidWhenPiecePinned()
-        {
-            return true;
-        }
-
-        public bool isCastlingAllowedForPlayerKingside(King selectedKing)
-        {
-            // return !(selectedKing.moved() || playerRook.kingSide.moved()) && !isKingChecked() && piecesBlockingWay();
-            return true;
-        }
-        public bool isCastlingAllowedForPlayerQueenside()
-        {
-            // return !(selectedKing.moved() || playerRook.kingSide.moved()) && !isKingChecked();
-            return true;
-        }
-
-        /*public List<Location> checkAvailableMoves(Piece piece)
-        {
-            foreach (Location location in piece.pieceMovements)
-            {
-
             }
-        }*/
 
-        public static void removeInvalidMoves(List<Location> pieceMovements)
-        {
-            pieceMovements.RemoveAll(location => !Checker.isMoveWithinBoard(location));
-            pieceMovements.RemoveAll(location => Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare != null ? Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare.pieceColor == Game.playerTurnColor : false);
-        }
-        public static void removeInvalidMovesForCheck(List<Location> pieceMovements)
-        {
-            Location checkingPieceLocation = Game.checkingLocation;
-            Piece checkingPiece = Board.GetBoard().matrix[checkingPieceLocation.Rank, checkingPieceLocation.File]._pieceOnSquare;
-            Location king = Game.playerTurnColor == Color.White ? new Location(0, 3) : new Location(7, 3); // Fixme
-            List<Location> allowedLocations = Checker.GetAvailableMovesInDirection(checkingPieceLocation, directionMapper(king.Rank - checkingPieceLocation.Rank), directionMapper(king.File - checkingPieceLocation.File));
-            pieceMovements.RemoveAll(location => location != Game.checkingLocation && !allowedLocations.Contains(location));
-        }
-
-        public static int directionMapper(int x)
-        {
-            return x > 0 ? +1 : x < 0 ? -1 : 0;
-        }
-
-        public static List<Location> GetAvailableMovesInDirection(Location currentLocation, int rowDirection, int colDirection)
-        {
-            List<Location> pieceMovements = new List<Location>();
-
-            for (int movement = 1; movement < 8; movement++)
+            public static bool IsMoveWithinBoard(Location newLocation)
             {
-                Location newLocation = new Location(currentLocation.Rank + (movement * rowDirection), currentLocation.File + (movement * colDirection));
+                return newLocation.Rank >= 0 && newLocation.Rank < Constants.NUMBER_OF_RANKS && newLocation.File >= 0 && newLocation.File < Constants.NUMBER_OF_FILES;
+            }
+            public static bool IsKingChecked()
+            {
+                return false;
+            }
+            public static bool IsPiecePinned()
+            {
+                return false;
+            }
+            public static bool IsMoveValidWhenKingChecked()
+            {
+                return true;
+            }
 
-                if (!Checker.isMoveWithinBoard(newLocation))
-                    break; // Stop if the new location is outside the board
+            public static bool IsMoveValidWhenPiecePinned()
+            {
+                return true;
+            }
 
-                if (Board.GetBoard().matrix[newLocation.Rank, newLocation.File]._pieceOnSquare != null)
+            public static bool IsCastlingAllowedForPlayerKingside(King selectedKing)
+            {
+                // return !(selectedKing.moved() || playerRook.kingSide.moved()) && !isKingChecked() && piecesBlockingWay();
+                return true;
+            }
+            public static bool IsCastlingAllowedForPlayerQueenside()
+            {
+                // return !(selectedKing.moved() || playerRook.kingSide.moved()) && !isKingChecked();
+                return true;
+            }
+
+            /*public List<Location> checkAvailableMoves(PieceNamespace piece)
+            {
+                foreach (Location location in piece.pieceMovements)
                 {
-                    if (Board.GetBoard().matrix[newLocation.Rank, newLocation.File]._pieceOnSquare.pieceColor != Game.playerTurnColor)
-                    {
-                        pieceMovements.Add(newLocation);
-                        // Stop if there is a piece in the way unless it's opposite color
-                    }
-                    break;
+
                 }
-                pieceMovements.Add(newLocation);
+            }*/
+
+            public static void RemoveInvalidMoves(List<Location> pieceMovements)
+            {
+                pieceMovements.RemoveAll(location => !IsMoveWithinBoard(location));
+                pieceMovements.RemoveAll(location => Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare != null && Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare!.pieceColor == GameNamespace.Game.playerTurnColor);
+            }
+            public static void RemoveInvalidMovesForCheck(List<Location> pieceMovements)
+            {
+                Location checkingPieceLocation = GameNamespace.Game.checkingLocation;
+                Piece? checkingPiece = Board.GetBoard().matrix[checkingPieceLocation.Rank, checkingPieceLocation.File]._pieceOnSquare;
+                Location king = GameNamespace.Game.playerTurnColor == Color.White ? new Location(0, 3) : new Location(7, 3); // Fixme
+                List<Location> allowedLocations = GetAvailableMovesInDirection(checkingPieceLocation, MapDirection(king.Rank - checkingPieceLocation.Rank), MapDirection(king.File - checkingPieceLocation.File));
+                pieceMovements.RemoveAll(location => location != GameNamespace.Game.checkingLocation && !allowedLocations.Contains(location));
             }
 
-            return pieceMovements;
-        }
+            public static int MapDirection(int x)
+            {
+                return x > 0 ? +1 : x < 0 ? -1 : 0;
+            }
 
-        public List<Location> BishopAvailableMoves(Location currentLocation)
-        {
-            List<Location> pieceMovements = new List<Location>();
+            public static List<Location> GetAvailableMovesInDirection(Location currentLocation, int rowDirection, int colDirection)
+            {
+                List<Location> pieceMovements = new();
 
-            // Check all four diagonals
-            pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, -1)); // Top-left
-            pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, 1));  // Top-right
-            pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, -1));  // Bottom-left
-            pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, 1));   // Bottom-right
+                for (int movement = 1; movement < 8; movement++)
+                {
+                    Location newLocation = new(currentLocation.Rank + (movement * rowDirection), currentLocation.File + (movement * colDirection));
 
-            return pieceMovements;
+                    if (!IsMoveWithinBoard(newLocation))
+                        break; // Stop if the new location is outside the board
+
+                    if (Board.GetBoard().matrix[newLocation.Rank, newLocation.File]._pieceOnSquare != null)
+                    {
+                        if (Board.GetBoard().matrix[newLocation.Rank, newLocation.File]._pieceOnSquare!.pieceColor != GameNamespace.Game.playerTurnColor)
+                        {
+                            pieceMovements.Add(newLocation);
+                            // Stop if there is a piece in the way unless it's opposite color
+                        }
+                        break;
+                    }
+                    pieceMovements.Add(newLocation);
+                }
+
+                return pieceMovements;
+            }
+
+            public static List<Location> BishopAvailableMoves(Location currentLocation)
+            {
+                List<Location> pieceMovements = new();
+
+                // Check all four diagonals
+                pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, -1)); // Top-left
+                pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, 1));  // Top-right
+                pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, -1));  // Bottom-left
+                pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, 1));   // Bottom-right
+
+                return pieceMovements;
+            }
         }
     }
 }

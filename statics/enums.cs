@@ -1,4 +1,4 @@
-﻿namespace ChessGame.statics
+﻿namespace ChessGame.Statics
 {
     public enum CastlingSide
     {

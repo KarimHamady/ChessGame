@@ -1,5 +1,4 @@
-﻿
-namespace ChessGame.global
+﻿namespace ChessGame.Global
 {
     public struct Location
     {
@@ -24,5 +23,16 @@ namespace ChessGame.global
             return !(a.Rank == b.Rank && a.File == b.File);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return obj is Location location &&
+                   Rank == location.Rank &&
+                   File == location.File;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Rank, File);
+        }
     }
 }

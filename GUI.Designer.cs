@@ -1,6 +1,6 @@
 ﻿namespace ChessGame
 {
-    partial class Form1
+    partial class GUI
     {
         /// <summary>
         ///  Required designer variable.
@@ -30,14 +30,15 @@
         {
             SuspendLayout();
             // 
-            // Form1
+            // GUI
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1371, 853);
+            AutoSize = true;
+            ClientSize = new Size(148, 3);
             Margin = new Padding(3, 4, 3, 4);
-            Name = "Form1";
-            Text = "Form1";
+            Name = "GUI";
+            Text = "GUI";
             ResumeLayout(false);
         }
 

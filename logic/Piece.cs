@@ -1,212 +1,213 @@
-﻿
-using ChessGame.global;
+﻿using ChessGame.Logic.GameNamespace;
+using ChessGame.Global;
+using ChessGame.Logic.CheckerNamespace;
+using ChessGame.Logic.BoardNamespace;
+using ChessGame.FacadeNamespace;
 
-namespace ChessGame.logic
+namespace ChessGame.Logic
 {
-
-
-
-    public abstract class Piece
+    namespace PieceNamespace
     {
-        public statics.PieceType pieceType = statics.PieceType.None;
-        public Color pieceColor;
-        protected bool capturesLikeItsMove = false;
-        public abstract List<Location> getAvailableMovesOnBoard(Location currentLocation);
-    }
-
-    internal class Pawn : Piece
-    {
-        public Pawn(Color color)
+        public abstract class Piece
         {
-            pieceType = statics.PieceType.Pawn;
-            pieceColor = color;
-            capturesLikeItsMove = false;
+            public Statics.PieceType pieceType = Statics.PieceType.None;
+            public Color pieceColor;
+            protected bool capturesLikeItsMove = false;
+            public abstract List<Location> GetAvailableMovesOnBoard(Location currentLocation);
         }
-        public override List<Location> getAvailableMovesOnBoard(Location currentLocation)
+
+        internal class Pawn : Piece
         {
-            List<Location> pieceMovements = new List<Location>();
-
-            int rankDirection = this.pieceColor == Color.White ? 1 : -1;
-            Location forwardOne = currentLocation + new Location(rankDirection * 1, 0);
-            Piece piece;
-
-            piece = Board.GetBoard().matrix[forwardOne.Rank, forwardOne.File]._pieceOnSquare;
-            if (piece == null)
-                pieceMovements.Add(forwardOne); // Move forward
-
-            Location fowardTwo = currentLocation + new Location(rankDirection * 2, 0);
-            piece = Board.GetBoard().matrix[fowardTwo.Rank, fowardTwo.File]._pieceOnSquare;
-            if (piece == null && (rankDirection * currentLocation.Rank == 1 || currentLocation.Rank * rankDirection == -6))
-                pieceMovements.Add(fowardTwo); // Move forward (initial double move)
-
-            // Pawn can only capture diagonal if there is an opponent piece
-            Location diagonalLeft = currentLocation + new Location(rankDirection * 1, -1);
-            if (Checker.isMoveWithinBoard(diagonalLeft))
+            public Pawn(Color color)
             {
-                piece = Board.GetBoard().matrix[diagonalLeft.Rank, diagonalLeft.File]._pieceOnSquare;
-                if (piece != null && piece.pieceColor != Game.playerTurnColor)
-                    pieceMovements.Add(diagonalLeft); // Capture diagonally left
+                pieceType = Statics.PieceType.Pawn;
+                pieceColor = color;
+                capturesLikeItsMove = false;
             }
-
-            Location diagonalRight = currentLocation + new Location(rankDirection * 1, 1);
-            if (Checker.isMoveWithinBoard(diagonalRight))
+            public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
             {
-                piece = Board.GetBoard().matrix[diagonalRight.Rank, diagonalRight.File]._pieceOnSquare;
-                if (piece != null && piece.pieceColor != Game.playerTurnColor)
-                    pieceMovements.Add(diagonalRight); // Capture diagonally right
-            }
-            Checker.removeInvalidMoves(pieceMovements);
-            return pieceMovements;
-        }
-    }
+                List<Location> pieceMovements = new();
 
-    internal class Knight : Piece
-    {
-        public Knight(Color color)
-        {
-            pieceType = statics.PieceType.Knight;
-            pieceColor = color;
-            capturesLikeItsMove = true;
-        }
-        public override List<Location> getAvailableMovesOnBoard(Location currentLocation)
-        {
-            List<Location> pieceMovements = new List<Location>();
+                int rankDirection = this.pieceColor == Color.White ? 1 : -1;
+                Location forwardOne = currentLocation + new Location(rankDirection * 1, 0);
+                Piece? piece;
 
-            pieceMovements.Add(currentLocation + new Location(-2, -1));
-            pieceMovements.Add(currentLocation + new Location(-2, 1));
-            pieceMovements.Add(currentLocation + new Location(2, -1));
-            pieceMovements.Add(currentLocation + new Location(2, 1));
-            pieceMovements.Add(currentLocation + new Location(-1, -2));
-            pieceMovements.Add(currentLocation + new Location(-1, 2));
-            pieceMovements.Add(currentLocation + new Location(1, -2));
-            pieceMovements.Add(currentLocation + new Location(1, 2));
+                piece = Board.GetBoard().matrix[forwardOne.Rank, forwardOne.File]._pieceOnSquare;
+                if (piece == null)
+                    pieceMovements.Add(forwardOne); // Move forward
 
-            Checker.removeInvalidMoves(pieceMovements);
-            return pieceMovements;
-        }
-    }
+                Location fowardTwo = currentLocation + new Location(rankDirection * 2, 0);
+                piece = Board.GetBoard().matrix[fowardTwo.Rank, fowardTwo.File]._pieceOnSquare;
+                if (piece == null && (rankDirection * currentLocation.Rank == 1 || currentLocation.Rank * rankDirection == -6))
+                    pieceMovements.Add(fowardTwo); // Move forward (initial double move)
 
-    internal class Bishop : Piece
-    {
-        List<Location> movementDirection = new List<Location> { new Location(-1, -1), new Location(-1, 1), new Location(1, -1), new Location(1, 1) };
-        public Bishop(Color color)
-        {
-            pieceType = statics.PieceType.Bishop;
-            pieceColor = color;
-            capturesLikeItsMove = true;
-        }
-
-        public override List<Location> getAvailableMovesOnBoard(Location currentLocation)
-        {
-            List<Location> pieceMovements = new List<Location>();
-
-            foreach (Location movement in movementDirection)
-                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File));
-
-            Checker.removeInvalidMoves(pieceMovements);
-            return pieceMovements;
-        }
-    }
-
-    internal class Rook : Piece
-    {
-        List<Location> movementDirection = new List<Location> { new Location(0, -1), new Location(0, 1), new Location(-1, 0), new Location(1, 0) };
-        public bool hasMoved = false;
-        public statics.RookSide _rookSide;
-
-        public Rook(Color color, statics.RookSide rookSide)
-        {
-            pieceType = statics.PieceType.Rook;
-            pieceColor = color;
-            capturesLikeItsMove = true;
-            _rookSide = rookSide;
-        }
-
-        public override List<Location> getAvailableMovesOnBoard(Location currentLocation)
-        {
-            List<Location> pieceMovements = new List<Location>();
-
-            foreach (Location movement in movementDirection)
-                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File));
-
-            Checker.removeInvalidMoves(pieceMovements);
-            return pieceMovements;
-        }
-
-    }
-
-    internal class Queen : Piece
-    {
-        List<Location> movementDirection = new List<Location> { new Location(-1, -1), new Location(-1, 1), new Location(1, -1), new Location(1, 1), new Location(0, -1), new Location(0, 1), new Location(-1, 0), new Location(1, 0) };
-        public Queen(Color color)
-        {
-            pieceType = statics.PieceType.Queen;
-            pieceColor = color;
-            capturesLikeItsMove = true;
-        }
-        public override List<Location> getAvailableMovesOnBoard(Location currentLocation)
-        {
-            List<Location> pieceMovements = new List<Location>();
-
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, -1)); // Top-left
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, 1));  // Top-right
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, -1));  // Bottom-left
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, 1));   // Bottom-right
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 0, -1)); // Left
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 0, 1));  // Right
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, 0)); // Up
-            pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, 0));  // Down
-
-            Checker.removeInvalidMoves(pieceMovements);
-            return pieceMovements;
-        }
-    }
-
-    internal class King : Piece
-    {
-        public bool hasMoved = false;
-        public King(Color color)
-        {
-            pieceType = statics.PieceType.King;
-            pieceColor = color;
-            capturesLikeItsMove = true;
-        }
-        public override List<Location> getAvailableMovesOnBoard(Location currentLocation)
-        {
-            List<Location> pieceMovements = new List<Location>();
-
-            pieceMovements.Add(currentLocation + new Location(-1, -1));
-            pieceMovements.Add(currentLocation + new Location(-1, 0));
-            pieceMovements.Add(currentLocation + new Location(-1, 1));
-            pieceMovements.Add(currentLocation + new Location(0, -1));
-            pieceMovements.Add(currentLocation + new Location(0, 1));
-            pieceMovements.Add(currentLocation + new Location(1, -1));
-            pieceMovements.Add(currentLocation + new Location(1, 0));
-            pieceMovements.Add(currentLocation + new Location(1, 1));
-
-            if (!Game.check)
-            {
-                // FIXME Check if a piece is blocking the castling (+1, -1) before allowing (+2, -2) using attackedLocations list
-                if (Game.playerTurnColor == Color.White)
+                // Pawn can only capture diagonal if there is an opponent piece
+                Location diagonalLeft = currentLocation + new Location(rankDirection * 1, -1);
+                if (Checker.IsMoveWithinBoard(diagonalLeft))
                 {
-                    if (Game.whiteCastlingAllowedKingSide == true)
-                        pieceMovements.Add(currentLocation + new Location(0, -2));
-                    if (Game.whiteCastlingAllowedQueenSide == true)
-                        pieceMovements.Add(currentLocation + new Location(0, 2));
+                    piece = Board.GetBoard().matrix[diagonalLeft.Rank, diagonalLeft.File]._pieceOnSquare;
+                    if (piece != null && piece.pieceColor != Game.playerTurnColor)
+                        pieceMovements.Add(diagonalLeft); // Capture diagonally left
                 }
-                else if (Game.playerTurnColor == Color.Black)
+
+                Location diagonalRight = currentLocation + new Location(rankDirection * 1, 1);
+                if (Checker.IsMoveWithinBoard(diagonalRight))
                 {
-                    if (Game.blackCastlingAllowedKingSide == true)
-                        pieceMovements.Add(currentLocation + new Location(0, -2));
-                    if (Game.blackCastlingAllowedQueenSide == true)
-                        pieceMovements.Add(currentLocation + new Location(0, 2));
+                    piece = Board.GetBoard().matrix[diagonalRight.Rank, diagonalRight.File]._pieceOnSquare;
+                    if (piece != null && piece.pieceColor != Game.playerTurnColor)
+                        pieceMovements.Add(diagonalRight); // Capture diagonally right
                 }
+                Checker.RemoveInvalidMoves(pieceMovements);
+                return pieceMovements;
+            }
+        }
+
+        internal class Knight : Piece
+        {
+            public Knight(Color color)
+            {
+                pieceType = Statics.PieceType.Knight;
+                pieceColor = color;
+                capturesLikeItsMove = true;
+            }
+            public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
+            {
+                List<Location> pieceMovements = new();
+
+                pieceMovements.Add(currentLocation + new Location(-2, -1));
+                pieceMovements.Add(currentLocation + new Location(-2, 1));
+                pieceMovements.Add(currentLocation + new Location(2, -1));
+                pieceMovements.Add(currentLocation + new Location(2, 1));
+                pieceMovements.Add(currentLocation + new Location(-1, -2));
+                pieceMovements.Add(currentLocation + new Location(-1, 2));
+                pieceMovements.Add(currentLocation + new Location(1, -2));
+                pieceMovements.Add(currentLocation + new Location(1, 2));
+
+                Checker.RemoveInvalidMoves(pieceMovements);
+                return pieceMovements;
+            }
+        }
+
+        internal class Bishop : Piece
+        {
+            List<Location> movementDirection = new() { new Location(-1, -1), new Location(-1, 1), new Location(1, -1), new Location(1, 1) };
+            public Bishop(Color color)
+            {
+                pieceType = Statics.PieceType.Bishop;
+                pieceColor = color;
+                capturesLikeItsMove = true;
             }
 
+            public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
+            {
+                List<Location> pieceMovements = new();
 
-            Checker.removeInvalidMoves(pieceMovements);
-            pieceMovements.RemoveAll(location => Game.attackLocations.Contains(location));
-            return pieceMovements;
+                foreach (Location movement in movementDirection)
+                    pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File));
+
+                Checker.RemoveInvalidMoves(pieceMovements);
+                return pieceMovements;
+            }
+        }
+
+        internal class Rook : Piece
+        {
+            List<Location> movementDirection = new() { new Location(0, -1), new Location(0, 1), new Location(-1, 0), new Location(1, 0) };
+            public bool hasMoved = false;
+            public Statics.RookSide _rookSide;
+
+            public Rook(Color color, Statics.RookSide rookSide)
+            {
+                pieceType = Statics.PieceType.Rook;
+                pieceColor = color;
+                capturesLikeItsMove = true;
+                _rookSide = rookSide;
+            }
+
+            public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
+            {
+                List<Location> pieceMovements = new();
+
+                foreach (Location movement in movementDirection)
+                    pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File));
+
+                Checker.RemoveInvalidMoves(pieceMovements);
+                return pieceMovements;
+            }
+
+        }
+
+        internal class Queen : Piece
+        {
+            List<Location> movementDirection = new() { new Location(-1, -1), new Location(-1, 1), new Location(1, -1), new Location(1, 1), new Location(0, -1), new Location(0, 1), new Location(-1, 0), new Location(1, 0) };
+            public Queen(Color color)
+            {
+                pieceType = Statics.PieceType.Queen;
+                pieceColor = color;
+                capturesLikeItsMove = true;
+            }
+            public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
+            {
+                List<Location> pieceMovements = new();
+
+                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, -1)); // Top-left
+                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, 1));  // Top-right
+                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, -1));  // Bottom-left
+                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, 1));   // Bottom-right
+                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 0, -1)); // Left
+                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 0, 1));  // Right
+                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, 0)); // Up
+                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, 0));  // Down
+
+                Checker.RemoveInvalidMoves(pieceMovements);
+                return pieceMovements;
+            }
+        }
+
+        internal class King : Piece
+        {
+            public bool hasMoved = false;
+            public King(Color color)
+            {
+                pieceType = Statics.PieceType.King;
+                pieceColor = color;
+                capturesLikeItsMove = true;
+            }
+            public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
+            {
+                List<Location> pieceMovements = new();
+
+                pieceMovements.Add(currentLocation + new Location(-1, -1));
+                pieceMovements.Add(currentLocation + new Location(-1, 0));
+                pieceMovements.Add(currentLocation + new Location(-1, 1));
+                pieceMovements.Add(currentLocation + new Location(0, -1));
+                pieceMovements.Add(currentLocation + new Location(0, 1));
+                pieceMovements.Add(currentLocation + new Location(1, -1));
+                pieceMovements.Add(currentLocation + new Location(1, 0));
+                pieceMovements.Add(currentLocation + new Location(1, 1));
+
+                if (!Game.check)
+                {
+                    // FIXME Check if a piece is blocking the castling (+1, -1) before allowing (+2, -2) using attackedLocations list
+                    if (Game.playerTurnColor == Color.White)
+                    {
+                        if (Game.whiteCastlingAllowedKingSide == true)
+                            pieceMovements.Add(currentLocation + new Location(0, -2));
+                        if (Game.whiteCastlingAllowedQueenSide == true)
+                            pieceMovements.Add(currentLocation + new Location(0, 2));
+                    }
+                    else if (Game.playerTurnColor == Color.Black)
+                    {
+                        if (Game.blackCastlingAllowedKingSide == true)
+                            pieceMovements.Add(currentLocation + new Location(0, -2));
+                        if (Game.blackCastlingAllowedQueenSide == true)
+                            pieceMovements.Add(currentLocation + new Location(0, 2));
+                    }
+                }
+                Checker.RemoveInvalidMoves(pieceMovements);
+                pieceMovements.RemoveAll(location => Facade.GetAllAttackedLocations().Contains(location));
+                return pieceMovements;
+            }
         }
     }
 }

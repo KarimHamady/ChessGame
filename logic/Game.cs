@@ -1,115 +1,97 @@
-﻿
-using ChessGame.global;
+﻿using ChessGame.Statics;
+using ChessGame.Global;
+using ChessGame.Logic.PieceNamespace;
 
-namespace ChessGame.logic
+namespace ChessGame.Logic
 {
-    internal class Game
+    namespace GameNamespace
     {
+        internal class Game
+        {
 
-        public static Location clickedLocation = new Location(-1, -1);
-        public static List<Location> possibleMovements = new List<Location>();
-        public static Color playerTurnColor = Color.White;
-        public static List<Location> attackLocations = getAllAttackedLocations();
+            public static Location clickedLocation = new(-1, -1);
+            public static List<Location> possibleMovements = new();
+            public static Color playerTurnColor = Color.White;
 
-        public static bool check = false;
-        public static Location checkingLocation = new Location(-1, -1);
+            public static bool check = false;
+            public static Location checkingLocation = new(-1, -1);
 
-        public static bool whiteCastlingAllowedKingSide = true;
-        public static bool blackCastlingAllowedKingSide = true;
-        public static bool whiteCastlingAllowedQueenSide = true;
-        public static bool blackCastlingAllowedQueenSide = true;
-        public static void movePieceFromSquareToSquare(Location currentLocation, Location newLocation)
-        {
-            BoardSquare currentSquare = Board.GetBoard().matrix[currentLocation.Rank, currentLocation.File];
-            BoardSquare newSquare = Board.GetBoard().matrix[newLocation.Rank, newLocation.File];
+            public static bool whiteCastlingAllowedKingSide = true;
+            public static bool blackCastlingAllowedKingSide = true;
+            public static bool whiteCastlingAllowedQueenSide = true;
+            public static bool blackCastlingAllowedQueenSide = true;
 
-            newSquare.AddPieceToSquare(currentSquare._pieceOnSquare);
-            currentSquare.RemovePieceFromSquare();
-
-            view.Facade.GetInstance().updateImageAtLocation(newLocation);
-            view.Facade.GetInstance().removeImageAtLocation(currentLocation);
-        }
-
-        private static bool IsKingSideCastling(Location currentKingLocation, Location newKingLocation)
-        {
-            return currentKingLocation.File - newKingLocation.File == 2;
-        }
-        private static bool IsQueenSideCastling(Location currentKingLocation, Location newKingLocation)
-        {
-            return newKingLocation.File - currentKingLocation.File == 2;
-        }
-        private static void MoveRookBesideKing(Location kingLocation)
-        {
-            Game.movePieceFromSquareToSquare(statics.InitialPieceLocations.GetRookLocationFromCastlingSide(statics.CastlingSide.KingSide), new Location(kingLocation.Rank, kingLocation.File + 1));
-        }
-        private static void MoveRookBesideQueen(Location kingLocation)
-        {
-            Game.movePieceFromSquareToSquare(statics.InitialPieceLocations.GetRookLocationFromCastlingSide(statics.CastlingSide.QueenSide), new Location(kingLocation.Rank, kingLocation.File - 1));
-        }
-        public static void CheckAndHandleCastling(Location currentLocation, Location newLocation)
-        {
-            if (IsKingSideCastling(currentLocation, newLocation))
-                MoveRookBesideKing(newLocation);
-            else if (IsQueenSideCastling(currentLocation, newLocation))
-                MoveRookBesideQueen(newLocation);
-        }
-        public static void UpdateCastlingCondition(BoardSquare currentSquare)
-        {
-            if (currentSquare._pieceOnSquare is King)
+            public static bool IsKingSideCastling(Location currentKingLocation, Location newKingLocation)
             {
-                King piece = (King)currentSquare._pieceOnSquare;
-                piece.hasMoved = true;
-                if (playerTurnColor == Color.White)
-                {
-                    Game.whiteCastlingAllowedKingSide = false;
-                    Game.whiteCastlingAllowedQueenSide = false;
-                }
-                else
-                {
-                    Game.blackCastlingAllowedKingSide = false;
-                    Game.blackCastlingAllowedQueenSide = false;
-                }
-
+                return currentKingLocation.File - newKingLocation.File == 2;
             }
-            else if (currentSquare._pieceOnSquare is Rook)
+            public static bool IsQueenSideCastling(Location currentKingLocation, Location newKingLocation)
             {
-                Rook piece = (Rook)currentSquare._pieceOnSquare;
-                piece.hasMoved = true;
-                if (playerTurnColor == Color.White)
+                return newKingLocation.File - currentKingLocation.File == 2;
+            }
+            public static void UpdateCastlingCondition(Piece currentPiece)
+            {
+                if (currentPiece is King)
                 {
-                    if (piece._rookSide == statics.RookSide.KingSide)
-                        Game.whiteCastlingAllowedKingSide = false;
-                    else if (piece._rookSide == statics.RookSide.QueenSide)
-                        Game.whiteCastlingAllowedQueenSide = false;
+                    King piece = (King)currentPiece;
+                    piece.hasMoved = true;
+                    if (playerTurnColor == Color.White)
+                    {
+                        whiteCastlingAllowedKingSide = false;
+                        whiteCastlingAllowedQueenSide = false;
+                    }
+                    else
+                    {
+                        blackCastlingAllowedKingSide = false;
+                        blackCastlingAllowedQueenSide = false;
+                    }
+
                 }
-                else
+                else if (currentPiece is Rook)
                 {
-                    if (piece._rookSide == statics.RookSide.KingSide)
-                        Game.blackCastlingAllowedKingSide = false;
-                    else if (piece._rookSide == statics.RookSide.QueenSide)
-                        Game.blackCastlingAllowedQueenSide = false;
+                    Rook piece = (Rook)currentPiece;
+                    piece.hasMoved = true;
+                    if (playerTurnColor == Color.White)
+                    {
+                        if (piece._rookSide == RookSide.KingSide)
+                            whiteCastlingAllowedKingSide = false;
+                        else if (piece._rookSide == RookSide.QueenSide)
+                            whiteCastlingAllowedQueenSide = false;
+                    }
+                    else
+                    {
+                        if (piece._rookSide == RookSide.KingSide)
+                            blackCastlingAllowedKingSide = false;
+                        else if (piece._rookSide == RookSide.QueenSide)
+                            blackCastlingAllowedQueenSide = false;
+                    }
                 }
             }
-        }
-        public static void ResetGameCheckVariables()
-        {
-            Game.clickedLocation = new Location(-1, -1);
-            Game.checkingLocation = new Location(-1, -1);
-            Game.check = false;
-        }
-        public static List<Location> getAllAttackedLocations()
-        {
-            List<Location> attackLocations = new List<Location>();
-            for (int rank = 0; rank < Board.NUMBER_OF_RANKS; rank++)
+            public static void ResetGameCheckVariables()
             {
-                for (int file = 0; file < Board.NUMBER_OF_FILES; file++)
-                {
-                    BoardSquare boardSquare = Board.GetBoard().matrix[rank, file];
-                    if (boardSquare._pieceOnSquare != null && boardSquare._pieceOnSquare.pieceColor == playerTurnColor)
-                        attackLocations.AddRange(boardSquare._pieceOnSquare.getAvailableMovesOnBoard(new Location(rank, file)));
-                }
+                clickedLocation = new Location(-1, -1);
+                checkingLocation = new Location(-1, -1);
+                check = false;
             }
-            return attackLocations;
+
+            public static Location GetRookLocationFromCastlingSide(CastlingSide castlingSide)
+            {
+                if (Game.playerTurnColor == Color.White)
+                {
+                    if (castlingSide == CastlingSide.KingSide)
+                        return new Location(0, 0);
+                    else if (castlingSide == CastlingSide.QueenSide)
+                        return new Location(0, 7);
+                }
+                else if (Game.playerTurnColor == Color.Black)
+                {
+                    if (castlingSide == CastlingSide.KingSide)
+                        return new Location(7, 0);
+                    else if (castlingSide == CastlingSide.QueenSide)
+                        return new Location(7, 7);
+                }
+                return new Location(-1, -1);
+            }
         }
     }
 }
