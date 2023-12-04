@@ -113,7 +113,6 @@ namespace ChessGame.Logic
         internal class Rook : Piece
         {
             List<Location> movementDirection = new() { new Location(0, -1), new Location(0, 1), new Location(-1, 0), new Location(1, 0) };
-            public bool hasMoved = false;
             public Statics.RookSide _rookSide;
 
             public Rook(Color color, Statics.RookSide rookSide)
@@ -166,7 +165,6 @@ namespace ChessGame.Logic
 
         internal class King : Piece
         {
-            public bool hasMoved = false;
             public King(Color color)
             {
                 pieceType = Statics.PieceType.King;
@@ -205,7 +203,7 @@ namespace ChessGame.Logic
                     }
                 }
                 Checker.RemoveInvalidMoves(pieceMovements);
-                if (Game.playerTurnColor != this.pieceColor)
+                if (Game.playerTurnColor == this.pieceColor)
                     pieceMovements.RemoveAll(location => Facade.GetAllAttackedLocations().Contains(location));
                 return pieceMovements;
             }

@@ -32,6 +32,11 @@ namespace ChessGame.Logic
             {
                 gameBoard!.matrix[location.Rank, location.File] = null;
             }
+
+            public static Piece GetPieceAtLocation(Location location)
+            {
+                return gameBoard!.matrix[location.Rank, location.File];
+            }
             private void AddPiecesToBoard()
             {
                 // Add white pieces on the first rank

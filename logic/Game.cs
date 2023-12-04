@@ -1,6 +1,6 @@
-﻿using ChessGame.Statics;
-using ChessGame.Global;
+﻿using ChessGame.Global;
 using ChessGame.Logic.PieceNamespace;
+using ChessGame.Statics;
 
 namespace ChessGame.Logic
 {
@@ -15,6 +15,9 @@ namespace ChessGame.Logic
 
             public static bool check = false;
             public static Location checkingLocation = new(-1, -1);
+            public static Location whiteKingLocation = new(0, 3);
+            public static Location blackKingLocation = new(7, 3);
+
 
             public static bool whiteCastlingAllowedKingSide = true;
             public static bool blackCastlingAllowedKingSide = true;
@@ -29,12 +32,12 @@ namespace ChessGame.Logic
             {
                 return newKingLocation.File - currentKingLocation.File == 2;
             }
+
             public static void UpdateCastlingCondition(Piece currentPiece)
             {
                 if (currentPiece is King)
                 {
                     King piece = (King)currentPiece;
-                    piece.hasMoved = true;
                     if (playerTurnColor == Color.White)
                     {
                         whiteCastlingAllowedKingSide = false;
@@ -50,7 +53,6 @@ namespace ChessGame.Logic
                 else if (currentPiece is Rook)
                 {
                     Rook piece = (Rook)currentPiece;
-                    piece.hasMoved = true;
                     if (playerTurnColor == Color.White)
                     {
                         if (piece._rookSide == RookSide.KingSide)

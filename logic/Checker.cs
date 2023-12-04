@@ -1,6 +1,5 @@
 ﻿using ChessGame.Global;
 using ChessGame.Logic.BoardNamespace;
-using ChessGame.Logic.PieceNamespace;
 using ChessGame.Statics;
 
 namespace ChessGame.Logic
@@ -19,13 +18,10 @@ namespace ChessGame.Logic
                 pieceMovements.RemoveAll(location => !IsMoveWithinBoard(location));
                 pieceMovements.RemoveAll(location => Board.GetBoard().matrix[location.Rank, location.File] != null && Board.GetBoard().matrix[location.Rank, location.File]!.pieceColor == GameNamespace.Game.playerTurnColor);
             }
-            public static void RemoveInvalidMovesForCheck(List<Location> pieceMovements)
+            public static void RemoveInvalidMovesForCheck(List<Location> pieceMovements, Location checkingPieceLocation, Location kingLocation)
             {
-                Location checkingPieceLocation = GameNamespace.Game.checkingLocation;
-                Piece? checkingPiece = Board.GetBoard().matrix[checkingPieceLocation.Rank, checkingPieceLocation.File];
-                Location king = GameNamespace.Game.playerTurnColor == Color.White ? new Location(0, 3) : new Location(7, 3); // Fixme
-                List<Location> allowedLocations = GetAvailableMovesInDirection(checkingPieceLocation, MapDirection(king.Rank - checkingPieceLocation.Rank), MapDirection(king.File - checkingPieceLocation.File));
-                pieceMovements.RemoveAll(location => location != GameNamespace.Game.checkingLocation && !allowedLocations.Contains(location));
+                List<Location> allowedLocations = GetAvailableMovesInDirection(checkingPieceLocation, MapDirection(kingLocation.Rank - checkingPieceLocation.Rank), MapDirection(kingLocation.File - checkingPieceLocation.File));
+                pieceMovements.RemoveAll(location => location != checkingPieceLocation && !allowedLocations.Contains(location));
             }
 
             public static int MapDirection(int x)
@@ -55,19 +51,6 @@ namespace ChessGame.Logic
                     }
                     pieceMovements.Add(newLocation);
                 }
-
-                return pieceMovements;
-            }
-
-            public static List<Location> BishopAvailableMoves(Location currentLocation)
-            {
-                List<Location> pieceMovements = new();
-
-                // Check all four diagonals
-                pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, -1)); // Top-left
-                pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, -1, 1));  // Top-right
-                pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, -1));  // Bottom-left
-                pieceMovements.AddRange(GetAvailableMovesInDirection(currentLocation, 1, 1));   // Bottom-right
 
                 return pieceMovements;
             }

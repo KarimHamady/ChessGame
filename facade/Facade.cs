@@ -43,15 +43,12 @@ namespace ChessGame.FacadeNamespace
         }
         public static void HandlePieceClick(Location clickLocation)
         {
-            int rank = clickLocation.Rank;
-            int file = clickLocation.File;
-            // Get the piece on the BoardSquare
-            Piece? clickedPiece = Board.GetBoard().matrix[rank, file];
+            Piece? clickedPiece = Board.GetPieceAtLocation(clickLocation);
 
             if (clickedPiece != null && clickedPiece.pieceColor == Game.playerTurnColor)
             {
                 // Get the possible movements for the clicked piece
-                List<Location> possibleMovements = clickedPiece.GetAvailableMovesOnBoard(new Location(rank, file));
+                List<Location> possibleMovements = clickedPiece.GetAvailableMovesOnBoard(clickLocation);
                 if (Game.check)
                 {
                     LimitPiecesMovements(clickedPiece, possibleMovements);
@@ -65,28 +62,27 @@ namespace ChessGame.FacadeNamespace
 
                 GUI.ResetSquareColors();
                 GUI.ColorLocations(possibleMovements, Color.Green);
-                Game.clickedLocation = new Location(rank, file);
+                Game.clickedLocation = clickLocation;
                 Game.possibleMovements = possibleMovements;
             }
             else if (Game.clickedLocation.Rank != -1 && Game.clickedLocation.File != -1)
             {
-                Location newLocation = new(rank, file);
-                if (Game.possibleMovements.Contains(newLocation))
+                if (Game.possibleMovements.Contains(clickLocation))
                 {
-                    MovePieceFromSquareToSquare(Game.clickedLocation, new Location(rank, file));
+                    MovePieceFromSquareToSquare(Game.clickedLocation, clickLocation);
                     Game.UpdateCastlingCondition(Board.GetBoard().matrix[Game.clickedLocation.Rank, Game.clickedLocation.File]);
-                    if (Board.GetBoard().matrix[newLocation.Rank, newLocation.File] is King)
-                        CheckAndHandleCastling(Game.clickedLocation, newLocation);
+                    if (Board.GetBoard().matrix[clickLocation.Rank, clickLocation.File] is King)
+                        CheckAndHandleCastling(Game.clickedLocation, clickLocation);
 
                     GUI.ResetSquareColors();
                     Game.ResetGameCheckVariables();
-                    foreach (Location location in Board.GetBoard().matrix[rank, file]!.GetAvailableMovesOnBoard(newLocation))
+                    foreach (Location location in Board.GetPieceAtLocation(clickLocation).GetAvailableMovesOnBoard(clickLocation))
                     {
                         Piece? piece = Board.GetBoard().matrix[location.Rank, location.File];
                         if (piece != null && piece is King && piece.pieceColor != Game.playerTurnColor)
                         {
                             chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
-                            Game.checkingLocation = new Location(rank, file);
+                            Game.checkingLocation = clickLocation;
                             Game.check = true;
                         }
                     }
@@ -99,9 +95,9 @@ namespace ChessGame.FacadeNamespace
         public static void LimitPiecesMovements(Piece clickedPiece, List<Location> possibleMovements)
         {
             if (clickedPiece is not King)
-                Checker.RemoveInvalidMovesForCheck(possibleMovements);
-            else
-                possibleMovements.RemoveAll(location => GetAllAttackedLocations().Contains(location));
+                Checker.RemoveInvalidMovesForCheck(possibleMovements, Game.checkingLocation, Game.playerTurnColor == Color.White ? Game.whiteKingLocation : Game.blackKingLocation);
+            /*            else
+                            possibleMovements.RemoveAll(location => GetAllAttackedLocations().Contains(location));*/
         }
 
         public static Image? GetImage(int rank, int file)
@@ -143,7 +139,7 @@ namespace ChessGame.FacadeNamespace
                 for (int file = 0; file < Constants.NUMBER_OF_FILES; file++)
                 {
                     Piece piece = Board.GetBoard().matrix[rank, file]!;
-                    if (piece != null && piece.pieceColor == Game.playerTurnColor)
+                    if (piece != null && piece.pieceColor != Game.playerTurnColor)
                         attackLocations.AddRange(piece.GetAvailableMovesOnBoard(new Location(rank, file)));
                 }
             }
