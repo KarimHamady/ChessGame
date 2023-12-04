@@ -9,6 +9,10 @@
             Rank = rank;
             File = file;
         }
+        public readonly Location Inverted
+        {
+            get { return new Location(7 - Rank, 7 - File); }
+        }
         public static Location operator +(Location a, Location b)
         {
             return new Location(a.Rank + b.Rank, a.File + b.File);

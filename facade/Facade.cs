@@ -62,7 +62,7 @@ namespace ChessGame.FacadeNamespace
                 }
 
                 GUI.ResetSquareColors();
-                GUI.ColorLocations(possibleMovements, Color.Green);
+                GUI.ColorLocations(possibleMovements, Color.Gold);
                 Game.clickedLocation = clickLocation;
                 Game.possibleMovements = possibleMovements;
             }

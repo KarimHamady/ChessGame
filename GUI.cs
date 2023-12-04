@@ -16,23 +16,22 @@ namespace ChessGame
             instance = this;
             InitializeComponent();
             Board.GetBoard();
-            DisplayBoard();
-
+            DisplayBoard(Constants.WHITE_PLAYER_UP);
         }
 
-        public void DisplayBoard()
+        public void DisplayBoard(bool isWhiteUp)
         {
             // Populate the chessboardPictureBoxes array
             for (int rank = 0; rank < Constants.NUMBER_OF_RANKS; rank++)
             {
                 for (int file = 0; file < Constants.NUMBER_OF_FILES; file++)
                 {
-                    Location chessTileLocation = new Location(rank, file);
+                    Location chessTileLocation = isWhiteUp ? new Location(rank, file) : new Location(7 - rank, 7 - file);
                     chessboardPictureBoxes[rank, file] = new ChessTile(
                             location: chessTileLocation,
                             color: Static.GetSquareColor(rank, file),
                             image: Facade.GetImage(rank, file),
-                            onPressed: (chessTileLocation) => Facade.HandlePieceClick(chessTileLocation)
+                            onPressed: (tileLocation) => Facade.HandlePieceClick(isWhiteUp ? tileLocation : tileLocation.Inverted)
                         );
                     Controls.Add(chessboardPictureBoxes[rank, file]);
                 }
