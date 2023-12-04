@@ -1,8 +1,8 @@
-﻿using ChessGame.Logic.GameNamespace;
+﻿using ChessGame.FacadeNamespace;
 using ChessGame.Global;
-using ChessGame.Logic.CheckerNamespace;
 using ChessGame.Logic.BoardNamespace;
-using ChessGame.FacadeNamespace;
+using ChessGame.Logic.CheckerNamespace;
+using ChessGame.Logic.GameNamespace;
 
 namespace ChessGame.Logic
 {
@@ -32,12 +32,12 @@ namespace ChessGame.Logic
                 Location forwardOne = currentLocation + new Location(rankDirection * 1, 0);
                 Piece? piece;
 
-                piece = Board.GetBoard().matrix[forwardOne.Rank, forwardOne.File]._pieceOnSquare;
+                piece = Board.GetBoard().matrix[forwardOne.Rank, forwardOne.File];
                 if (piece == null)
                     pieceMovements.Add(forwardOne); // Move forward
 
                 Location fowardTwo = currentLocation + new Location(rankDirection * 2, 0);
-                piece = Board.GetBoard().matrix[fowardTwo.Rank, fowardTwo.File]._pieceOnSquare;
+                piece = Board.GetBoard().matrix[fowardTwo.Rank, fowardTwo.File];
                 if (piece == null && (rankDirection * currentLocation.Rank == 1 || currentLocation.Rank * rankDirection == -6))
                     pieceMovements.Add(fowardTwo); // Move forward (initial double move)
 
@@ -45,7 +45,7 @@ namespace ChessGame.Logic
                 Location diagonalLeft = currentLocation + new Location(rankDirection * 1, -1);
                 if (Checker.IsMoveWithinBoard(diagonalLeft))
                 {
-                    piece = Board.GetBoard().matrix[diagonalLeft.Rank, diagonalLeft.File]._pieceOnSquare;
+                    piece = Board.GetBoard().matrix[diagonalLeft.Rank, diagonalLeft.File];
                     if (piece != null && piece.pieceColor != Game.playerTurnColor)
                         pieceMovements.Add(diagonalLeft); // Capture diagonally left
                 }
@@ -53,7 +53,7 @@ namespace ChessGame.Logic
                 Location diagonalRight = currentLocation + new Location(rankDirection * 1, 1);
                 if (Checker.IsMoveWithinBoard(diagonalRight))
                 {
-                    piece = Board.GetBoard().matrix[diagonalRight.Rank, diagonalRight.File]._pieceOnSquare;
+                    piece = Board.GetBoard().matrix[diagonalRight.Rank, diagonalRight.File];
                     if (piece != null && piece.pieceColor != Game.playerTurnColor)
                         pieceMovements.Add(diagonalRight); // Capture diagonally right
                 }
@@ -205,7 +205,8 @@ namespace ChessGame.Logic
                     }
                 }
                 Checker.RemoveInvalidMoves(pieceMovements);
-                pieceMovements.RemoveAll(location => Facade.GetAllAttackedLocations().Contains(location));
+                if (Game.playerTurnColor != this.pieceColor)
+                    pieceMovements.RemoveAll(location => Facade.GetAllAttackedLocations().Contains(location));
                 return pieceMovements;
             }
         }

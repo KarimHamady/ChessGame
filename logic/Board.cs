@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using ChessGame.Global;
 using ChessGame.Logic.PieceNamespace;
 using ChessGame.Statics;
 
@@ -9,12 +9,11 @@ namespace ChessGame.Logic
         internal class Board
         {
             private static Board? gameBoard = null;
-            public BoardSquare[,] matrix;
+            public Piece?[,] matrix;
 
             private Board()
             {
-                matrix = new BoardSquare[Constants.NUMBER_OF_RANKS, Constants.NUMBER_OF_FILES];
-                AddColorsToSquares();
+                matrix = new Piece[Constants.NUMBER_OF_RANKS, Constants.NUMBER_OF_FILES];
                 AddPiecesToBoard();
             }
             public static Board GetBoard()
@@ -23,114 +22,54 @@ namespace ChessGame.Logic
                     gameBoard = new Board();
                 return gameBoard;
             }
-            private void AddColorsToSquares()
+
+            public static void AddPieceAtLocation(Piece piece, Location location)
             {
-                for (int rank = 0; rank < Constants.NUMBER_OF_RANKS; rank++)
-                {
-                    for (int file = 0; file < Constants.NUMBER_OF_FILES; file++)
-                    {
-                        Color color = (rank + file) % 2 == 0 ? Color.White : Color.Black;
-                        matrix[rank, file] = new BoardSquare(color);
-                    }
-                }
+                gameBoard!.matrix[location.Rank, location.File] = piece;
+            }
+
+            public static void RemovePieceAtLocation(Location location)
+            {
+                gameBoard!.matrix[location.Rank, location.File] = null;
             }
             private void AddPiecesToBoard()
             {
                 // Add white pieces on the first rank
                 Color pieceColor = Color.White;
-                matrix[0, 0].AddPieceToSquare(new Rook(pieceColor, RookSide.KingSide));
-                matrix[0, 1].AddPieceToSquare(new Knight(pieceColor));
-                matrix[0, 2].AddPieceToSquare(new Bishop(pieceColor));
-                matrix[0, 3].AddPieceToSquare(new King(pieceColor));
-                matrix[0, 4].AddPieceToSquare(new Queen(pieceColor));
-                matrix[0, 5].AddPieceToSquare(new Bishop(pieceColor));
-                matrix[0, 6].AddPieceToSquare(new Knight(pieceColor));
-                matrix[0, 7].AddPieceToSquare(new Rook(pieceColor, RookSide.QueenSide));
+                matrix[0, 0] = new Rook(pieceColor, RookSide.KingSide);
+                matrix[0, 1] = new Knight(pieceColor);
+                matrix[0, 2] = new Bishop(pieceColor);
+                matrix[0, 3] = new King(pieceColor);
+                matrix[0, 4] = new Queen(pieceColor);
+                matrix[0, 5] = new Bishop(pieceColor);
+                matrix[0, 6] = new Knight(pieceColor);
+                matrix[0, 7] = new Rook(pieceColor, RookSide.QueenSide);
 
                 // Add white pawns on the second rank
                 for (int file = 0; file < Constants.NUMBER_OF_FILES; file++)
                 {
-                    matrix[1, file].AddPieceToSquare(new Pawn(pieceColor));
+                    matrix[1, file] = new Pawn(pieceColor);
                 }
 
                 // Add black pawns on the seventh rank
                 pieceColor = Color.Black;
                 for (int file = 0; file < Constants.NUMBER_OF_FILES; file++)
                 {
-                    matrix[6, file].AddPieceToSquare(new Pawn(pieceColor));
+                    matrix[6, file] = new Pawn(pieceColor);
                 }
 
                 // Add black pieces on the eighth rank
-                matrix[7, 0].AddPieceToSquare(new Rook(pieceColor, RookSide.KingSide));
-                matrix[7, 1].AddPieceToSquare(new Knight(pieceColor));
-                matrix[7, 2].AddPieceToSquare(new Bishop(pieceColor));
-                matrix[7, 3].AddPieceToSquare(new King(pieceColor));
-                matrix[7, 4].AddPieceToSquare(new Queen(pieceColor));
-                matrix[7, 5].AddPieceToSquare(new Bishop(pieceColor));
-                matrix[7, 6].AddPieceToSquare(new Knight(pieceColor));
-                matrix[7, 7].AddPieceToSquare(new Rook(pieceColor, RookSide.QueenSide));
+                matrix[7, 0] = new Rook(pieceColor, RookSide.KingSide);
+                matrix[7, 1] = new Knight(pieceColor);
+                matrix[7, 2] = new Bishop(pieceColor);
+                matrix[7, 3] = new King(pieceColor);
+                matrix[7, 4] = new Queen(pieceColor);
+                matrix[7, 5] = new Bishop(pieceColor);
+                matrix[7, 6] = new Knight(pieceColor);
+                matrix[7, 7] = new Rook(pieceColor, RookSide.QueenSide);
             }
-
-            public void DisplayBoardInfo()
-            {
-                StringBuilder boardString = new();
-
-                for (int rank = 0; rank < Constants.NUMBER_OF_RANKS; rank++)
-                {
-                    for (int file = 0; file < Constants.NUMBER_OF_FILES; file++)
-                    {
-                        Piece? piece = matrix[rank, file]._pieceOnSquare;
-
-                        if (piece != null)
-                        {
-                            boardString.Append(piece.pieceType);
-                        }
-                        else
-                        {
-                            boardString.Append("-");
-                        }
-
-                        boardString.Append(" ");
-                    }
-
-                    boardString.AppendLine(); // Move to the next rank
-                }
-
-                MessageBox.Show(boardString.ToString(), "Chess Board");
-            }
-
-
         }
 
-        internal class BoardSquare
-        {
-            public Color _color;
-            public Piece? _pieceOnSquare = null;
 
-            public BoardSquare(Color color)
-            {
-                _color = color;
-            }
-
-            public BoardSquare(Color color, Piece pieceOnSquare) : this(color)
-            {
-                _pieceOnSquare = pieceOnSquare;
-            }
-
-            public void AddPieceToSquare(Piece piece)
-            {
-                _pieceOnSquare = piece;
-            }
-
-            public void RemovePieceFromSquare()
-            {
-                if (_pieceOnSquare == null)
-                {
-                    throw new InvalidOperationException("There is no piece on the square to remove.");
-                }
-                _pieceOnSquare = null; //FIXME
-            }
-
-        }
     }
 }

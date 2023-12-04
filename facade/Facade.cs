@@ -1,17 +1,16 @@
-﻿using ChessGame.Logic;
-using ChessGame.Global;
-using ChessGame.Statics;
+﻿using ChessGame.Global;
+using ChessGame.Logic.BoardNamespace;
 using ChessGame.Logic.CheckerNamespace;
 using ChessGame.Logic.GameNamespace;
 using ChessGame.Logic.PieceNamespace;
-using ChessGame.Logic.BoardNamespace;
+using ChessGame.Statics;
 
 namespace ChessGame.FacadeNamespace
 {
     internal class Facade
     {
         private static Facade? instance;
-        public PictureBox[,] chessboardPictureBoxes = new PictureBox[Constants.NUMBER_OF_RANKS, Constants.NUMBER_OF_FILES];
+        public static PictureBox[,] chessboardPictureBoxes = new PictureBox[Constants.NUMBER_OF_RANKS, Constants.NUMBER_OF_FILES];
         private Facade() { }
         public static Facade GetInstance()
         {
@@ -19,11 +18,11 @@ namespace ChessGame.FacadeNamespace
                 instance = new Facade();
             return instance;
         }
-        public void UpdateImageAtLocation(Location location)
+        public static void UpdateImageAtLocation(Location location)
         {
-            chessboardPictureBoxes[location.Rank, location.File].Image = LoadPieceImage(Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare);
+            chessboardPictureBoxes[location.Rank, location.File].Image = LoadPieceImage(Board.GetBoard().matrix[location.Rank, location.File]);
         }
-        public void RemoveImageAtLocation(Location location)
+        public static void RemoveImageAtLocation(Location location)
         {
             chessboardPictureBoxes[location.Rank, location.File].Image = null;
         }
@@ -42,11 +41,12 @@ namespace ChessGame.FacadeNamespace
         {
             // TODO: what?
         }
-        public static void HandlePieceClick(Location clickLocation) {
+        public static void HandlePieceClick(Location clickLocation)
+        {
             int rank = clickLocation.Rank;
             int file = clickLocation.File;
             // Get the piece on the BoardSquare
-            Piece? clickedPiece = Board.GetBoard().matrix[rank, file]._pieceOnSquare;
+            Piece? clickedPiece = Board.GetBoard().matrix[rank, file];
 
             if (clickedPiece != null && clickedPiece.pieceColor == Game.playerTurnColor)
             {
@@ -56,11 +56,11 @@ namespace ChessGame.FacadeNamespace
                 {
                     LimitPiecesMovements(clickedPiece, possibleMovements);
                     // TODO: improve
-                    if (possibleMovements.Count == 0)
+                    /*if (possibleMovements.Count == 0)
                     {
                         GUI.AddCheckLabel();
                         return;
-                    }
+                    }*/
                 }
 
                 GUI.ResetSquareColors();
@@ -74,18 +74,18 @@ namespace ChessGame.FacadeNamespace
                 if (Game.possibleMovements.Contains(newLocation))
                 {
                     MovePieceFromSquareToSquare(Game.clickedLocation, new Location(rank, file));
-                    Game.UpdateCastlingCondition(Board.GetBoard().matrix[Game.clickedLocation.Rank, Game.clickedLocation.File]._pieceOnSquare);
-                    if (Board.GetBoard().matrix[newLocation.Rank, newLocation.File]._pieceOnSquare is King)
+                    Game.UpdateCastlingCondition(Board.GetBoard().matrix[Game.clickedLocation.Rank, Game.clickedLocation.File]);
+                    if (Board.GetBoard().matrix[newLocation.Rank, newLocation.File] is King)
                         CheckAndHandleCastling(Game.clickedLocation, newLocation);
 
                     GUI.ResetSquareColors();
                     Game.ResetGameCheckVariables();
-                    foreach (Location location in Board.GetBoard().matrix[rank, file]._pieceOnSquare!.GetAvailableMovesOnBoard(newLocation))
+                    foreach (Location location in Board.GetBoard().matrix[rank, file]!.GetAvailableMovesOnBoard(newLocation))
                     {
-                        Piece? piece = Board.GetBoard().matrix[location.Rank, location.File]._pieceOnSquare;
+                        Piece? piece = Board.GetBoard().matrix[location.Rank, location.File];
                         if (piece != null && piece is King && piece.pieceColor != Game.playerTurnColor)
                         {
-                            GetInstance().chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
+                            chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
                             Game.checkingLocation = new Location(rank, file);
                             Game.check = true;
                         }
@@ -104,27 +104,21 @@ namespace ChessGame.FacadeNamespace
                 possibleMovements.RemoveAll(location => GetAllAttackedLocations().Contains(location));
         }
 
-        public static Color GetColor(int rank, int file)
-        {
-            return Board.GetBoard().matrix[rank, file]._color;
-        }
-
         public static Image? GetImage(int rank, int file)
         {
-            return LoadPieceImage(Board.GetBoard().matrix[rank, file]._pieceOnSquare);
+            return LoadPieceImage(Board.GetBoard().matrix[rank, file]);
         }
 
 
         public static void MovePieceFromSquareToSquare(Location currentLocation, Location newLocation)
         {
-            BoardSquare currentSquare = Board.GetBoard().matrix[currentLocation.Rank, currentLocation.File];
-            BoardSquare newSquare = Board.GetBoard().matrix[newLocation.Rank, newLocation.File];
+            Piece piece = Board.GetBoard().matrix[currentLocation.Rank, currentLocation.File]!;
 
-            newSquare.AddPieceToSquare(currentSquare._pieceOnSquare!);
-            currentSquare.RemovePieceFromSquare();
+            Board.AddPieceAtLocation(piece, newLocation);
+            Board.RemovePieceAtLocation(currentLocation);
 
-            GetInstance().UpdateImageAtLocation(newLocation);
-            GetInstance().RemoveImageAtLocation(currentLocation);
+            UpdateImageAtLocation(newLocation);
+            RemoveImageAtLocation(currentLocation);
         }
         private static void MoveRookBesideKing(Location kingLocation)
         {
@@ -148,16 +142,12 @@ namespace ChessGame.FacadeNamespace
             {
                 for (int file = 0; file < Constants.NUMBER_OF_FILES; file++)
                 {
-                    BoardSquare boardSquare = Board.GetBoard().matrix[rank, file];
-                    if (boardSquare._pieceOnSquare != null && boardSquare._pieceOnSquare.pieceColor == Game.playerTurnColor)
-                        attackLocations.AddRange(boardSquare._pieceOnSquare.GetAvailableMovesOnBoard(new Location(rank, file)));
+                    Piece piece = Board.GetBoard().matrix[rank, file]!;
+                    if (piece != null && piece.pieceColor == Game.playerTurnColor)
+                        attackLocations.AddRange(piece.GetAvailableMovesOnBoard(new Location(rank, file)));
                 }
             }
             return attackLocations;
-        }
-        public static Piece? GetPiece(int rank, int file)
-        {
-            return Board.GetBoard().matrix[rank, file]._pieceOnSquare;
         }
     }
 }
