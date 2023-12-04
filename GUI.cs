@@ -1,6 +1,7 @@
 using ChessGame.FacadeNamespace;
 using ChessGame.global;
 using ChessGame.Global;
+using ChessGame.Logic.BoardNamespace;
 using ChessGame.Statics;
 
 namespace ChessGame
@@ -14,6 +15,7 @@ namespace ChessGame
         {
             instance = this;
             InitializeComponent();
+            Board.GetBoard();
             DisplayBoard();
 
         }
@@ -56,7 +58,7 @@ namespace ChessGame
             {
                 Text = "Checkmate!",
                 Font = new Font("Arial", 24, FontStyle.Bold), // Adjust font size and style
-                Location = new Point(8 * Constants.SQUARE_SIZE + 14, 100),
+                Location = new Point(Constants.CHECK_LABEL_LOCATION, 100),
                 AutoSize = true
             };
             instance!.Controls.Add(checkmateLabel);
@@ -68,7 +70,7 @@ namespace ChessGame
             {
                 Text = "Check!",
                 Font = new Font("Arial", 24, FontStyle.Bold), // Adjust font size and style
-                Location = new Point(8 * Constants.SQUARE_SIZE + 14, 100),
+                Location = new Point(Constants.CHECK_LABEL_LOCATION, 100),
                 AutoSize = true
             };
             instance!.Controls.Add(checkmateLabel);

@@ -25,17 +25,17 @@ namespace ChessGame.Logic
 
             public static void AddPieceAtLocation(Piece piece, Location location)
             {
-                gameBoard!.matrix[location.Rank, location.File] = piece;
+                Board.GetBoard().matrix[location.Rank, location.File] = piece;
             }
 
             public static void RemovePieceAtLocation(Location location)
             {
-                gameBoard!.matrix[location.Rank, location.File] = null;
+                Board.GetBoard().matrix[location.Rank, location.File] = null;
             }
 
             public static Piece GetPieceAtLocation(Location location)
             {
-                return gameBoard!.matrix[location.Rank, location.File];
+                return gameBoard.matrix[location.Rank, location.File] != null ? gameBoard.matrix[location.Rank, location.File] : null;
             }
             private void AddPiecesToBoard()
             {

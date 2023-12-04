@@ -1,12 +1,5 @@
 ﻿namespace ChessGame.Statics
 {
-    public enum CastlingSide
-    {
-        KingSide,
-        QueenSide,
-        Invalid
-    }
-
     public enum PieceType
     {
         None,
@@ -23,6 +16,13 @@
         KingSide,
         QueenSide
     }
+    public enum CastlingSide
+    {
+        KingSide,
+        QueenSide,
+        Invalid
+    }
+
 
 
 

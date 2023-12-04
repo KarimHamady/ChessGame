@@ -1,5 +1,6 @@
 ﻿using ChessGame.FacadeNamespace;
 using ChessGame.Global;
+using ChessGame.logic;
 using ChessGame.Logic.BoardNamespace;
 using ChessGame.Logic.CheckerNamespace;
 using ChessGame.Logic.GameNamespace;
@@ -189,16 +190,16 @@ namespace ChessGame.Logic
                     // FIXME Check if a piece is blocking the castling (+1, -1) before allowing (+2, -2) using attackedLocations list
                     if (Game.playerTurnColor == Color.White)
                     {
-                        if (Game.whiteCastlingAllowedKingSide == true)
+                        if (Castle.whiteCastlingAllowedKingSide == true)
                             pieceMovements.Add(currentLocation + new Location(0, -2));
-                        if (Game.whiteCastlingAllowedQueenSide == true)
+                        if (Castle.whiteCastlingAllowedQueenSide == true)
                             pieceMovements.Add(currentLocation + new Location(0, 2));
                     }
                     else if (Game.playerTurnColor == Color.Black)
                     {
-                        if (Game.blackCastlingAllowedKingSide == true)
+                        if (Castle.blackCastlingAllowedKingSide == true)
                             pieceMovements.Add(currentLocation + new Location(0, -2));
-                        if (Game.blackCastlingAllowedQueenSide == true)
+                        if (Castle.blackCastlingAllowedQueenSide == true)
                             pieceMovements.Add(currentLocation + new Location(0, 2));
                     }
                 }

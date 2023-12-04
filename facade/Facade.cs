@@ -1,4 +1,5 @@
 ﻿using ChessGame.Global;
+using ChessGame.logic;
 using ChessGame.Logic.BoardNamespace;
 using ChessGame.Logic.CheckerNamespace;
 using ChessGame.Logic.GameNamespace;
@@ -70,7 +71,7 @@ namespace ChessGame.FacadeNamespace
                 if (Game.possibleMovements.Contains(clickLocation))
                 {
                     MovePieceFromSquareToSquare(Game.clickedLocation, clickLocation);
-                    Game.UpdateCastlingCondition(Board.GetBoard().matrix[Game.clickedLocation.Rank, Game.clickedLocation.File]);
+                    Castle.UpdateCastlingCondition(Game.playerTurnColor, Board.GetBoard().matrix[Game.clickedLocation.Rank, Game.clickedLocation.File]);
                     if (Board.GetBoard().matrix[clickLocation.Rank, clickLocation.File] is King)
                         CheckAndHandleCastling(Game.clickedLocation, clickLocation);
 
@@ -91,18 +92,34 @@ namespace ChessGame.FacadeNamespace
             }
         }
 
+        private static void MoveRookBesideKing(Location kingLocation)
+        {
+            MovePieceFromSquareToSquare(Castle.GetRookLocationFromCastlingSide(Game.playerTurnColor, CastlingSide.KingSide), new Location(kingLocation.Rank, kingLocation.File + 1));
+        }
+        private static void MoveRookBesideQueen(Location kingLocation)
+        {
+            MovePieceFromSquareToSquare(Castle.GetRookLocationFromCastlingSide(Game.playerTurnColor, CastlingSide.QueenSide), new Location(kingLocation.Rank, kingLocation.File - 1));
+        }
+        public static void CheckAndHandleCastling(Location currentLocation, Location newLocation)
+        {
+            if (Castle.IsKingSideCastling(currentLocation, newLocation))
+                MoveRookBesideKing(newLocation);
+            else if (Castle.IsQueenSideCastling(currentLocation, newLocation))
+                MoveRookBesideQueen(newLocation);
+        }
 
         public static void LimitPiecesMovements(Piece clickedPiece, List<Location> possibleMovements)
         {
             if (clickedPiece is not King)
                 Checker.RemoveInvalidMovesForCheck(possibleMovements, Game.checkingLocation, Game.playerTurnColor == Color.White ? Game.whiteKingLocation : Game.blackKingLocation);
-            /*            else
-                            possibleMovements.RemoveAll(location => GetAllAttackedLocations().Contains(location));*/
+            else
+                possibleMovements.RemoveAll(location => GetAllAttackedLocations().Contains(location));
         }
 
         public static Image? GetImage(int rank, int file)
         {
-            return LoadPieceImage(Board.GetBoard().matrix[rank, file]);
+            Piece piece = Board.GetPieceAtLocation(new Location(rank, file));
+            return piece != null ? LoadPieceImage(piece) : null;
         }
 
 
@@ -116,21 +133,7 @@ namespace ChessGame.FacadeNamespace
             UpdateImageAtLocation(newLocation);
             RemoveImageAtLocation(currentLocation);
         }
-        private static void MoveRookBesideKing(Location kingLocation)
-        {
-            MovePieceFromSquareToSquare(Game.GetRookLocationFromCastlingSide(CastlingSide.KingSide), new Location(kingLocation.Rank, kingLocation.File + 1));
-        }
-        private static void MoveRookBesideQueen(Location kingLocation)
-        {
-            MovePieceFromSquareToSquare(Game.GetRookLocationFromCastlingSide(CastlingSide.QueenSide), new Location(kingLocation.Rank, kingLocation.File - 1));
-        }
-        public static void CheckAndHandleCastling(Location currentLocation, Location newLocation)
-        {
-            if (Game.IsKingSideCastling(currentLocation, newLocation))
-                MoveRookBesideKing(newLocation);
-            else if (Game.IsQueenSideCastling(currentLocation, newLocation))
-                MoveRookBesideQueen(newLocation);
-        }
+
         public static List<Location> GetAllAttackedLocations()
         {
             List<Location> attackLocations = new();
