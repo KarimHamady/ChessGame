@@ -1,0 +1,79 @@
+---------------------------------------------------------------- Abstract Factory Pattern
+
+// Abstract Factory Interface
+public interface IPieceFactory
+{
+    Piece CreatePiece(Color color);
+}
+
+// Concrete Factories for Each Piece Type
+public class PawnFactory : IPieceFactory
+{
+    public Piece CreatePiece(Color color)
+    {
+        return new Pawn(color);
+    }
+}
+
+public class KnightFactory : IPieceFactory
+{
+    public Piece CreatePiece(Color color)
+    {
+        return new Knight(color);
+    }
+}
+
+// ... Repeat the pattern for other piece types
+
+// Usage:
+IPieceFactory factory = GetFactoryForPieceType(statics.PieceType.Pawn);
+Piece pawn = factory.CreatePiece(Color.White);
+
+---------------------------------------------------------------- Strategy Pattern
+// Movement Strategy Interface
+public interface IMovementStrategy
+{
+    List<Location> GetAvailableMoves(Location currentLocation, Piece piece);
+}
+
+// Concrete Movement Strategies
+public class BishopMovementStrategy : IMovementStrategy
+{
+    public List<Location> GetAvailableMoves(Location currentLocation, Piece piece)
+    {
+        // Implement bishop movement logic
+        // Use GetAvailableMovesInDirection or any other logic specific to bishops
+    }
+}
+
+public class RookMovementStrategy : IMovementStrategy
+{
+    public List<Location> GetAvailableMoves(Location currentLocation, Piece piece)
+    {
+        // Implement rook movement logic
+        // Use GetAvailableMovesInDirection or any other logic specific to rooks
+    }
+}
+
+// ... Repeat the pattern for other piece types
+
+// Context class for chess pieces
+public class Piece
+{
+    private IMovementStrategy movementStrategy;
+
+    public void SetMovementStrategy(IMovementStrategy strategy)
+    {
+        movementStrategy = strategy;
+    }
+
+    public List<Location> GetAvailableMoves(Location currentLocation)
+    {
+        return movementStrategy?.GetAvailableMoves(currentLocation, this) ?? new List<Location>();
+    }
+}
+
+// Usage:
+Piece rook = // ... Create a rook instance
+rook.SetMovementStrategy(new RookMovementStrategy());
+List<Location> rookMoves = rook.GetAvailableMoves(currentLocation);
