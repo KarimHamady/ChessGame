@@ -15,10 +15,9 @@ namespace ChessGame.strategy
         {
             Piece clickedPiece = Game.GetInstance().chessBoard.GetPieceAt(clickLocation);
             List<Location> possibleMovements = clickedPiece.GetAvailableMovesOnBoard(clickLocation);
+            Game.GetInstance().chessBoard.RemoveInvalidMoves(possibleMovements, clickedPiece.pieceColor);
             if (Game.GetInstance().gameState.check)
-            {
                 Game.GetInstance().LimitPiecesMovements(clickedPiece, possibleMovements);
-            }
 
             GUI.ResetSquareColors();
             GUI.ColorLocations(possibleMovements, Color.Gold);
@@ -41,28 +40,42 @@ namespace ChessGame.strategy
 
                 GUI.ResetSquareColors();
                 Game.GetInstance().gameState.ResetGameCheckVariables();
-                foreach (Location location in Game.GetInstance().chessBoard.GetPieceAt(clickLocation).GetAvailableMovesOnBoard(clickLocation))
-                {
-                    Piece? piece = Game.GetInstance().chessBoard.matrix[location.Rank, location.File];
-                    if (piece != null && piece is King && piece.pieceColor != Game.GetInstance().gameState.playerTurnColor)
-                    {
-                        Game.chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
-                        Game.GetInstance().gameState.checkingLocation = clickLocation;
-                        Game.GetInstance().gameState.check = true;
-                        if (isCheckmate())
-                        {
-                            MessageBox.Show("CHECKMATE!");
-                        }
-                        break;
-                    }
-                }
-                Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+
+                CheckAndHandleKingCheck(clickLocation);
+                AlternateColors();
             }
         }
 
-        public bool isCheckmate()
+        public void CheckAndHandleKingCheck(Location clickLocation)
+        {
+            List<Location> pieceMovements = Game.GetInstance().chessBoard.GetPieceAt(clickLocation).GetAvailableMovesOnBoard(clickLocation);
+            Game.GetInstance().chessBoard.RemoveInvalidMoves(pieceMovements, Game.GetInstance().chessBoard.GetPieceAt(clickLocation).pieceColor);
+            foreach (Location location in pieceMovements)
+            {
+                Piece? piece = Game.GetInstance().chessBoard.matrix[location.Rank, location.File];
+                if (piece != null && piece is King && piece.pieceColor != Game.GetInstance().gameState.playerTurnColor)
+                {
+                    Game.chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
+                    Game.GetInstance().gameState.checkingLocation = clickLocation;
+                    Game.GetInstance().gameState.check = true;
+                    Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+                    if (isCheckmate())
+                    {
+                        MessageBox.Show("CHECKMATE!");
+                    }
+                    Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+
+                    break;
+                }
+            }
+        }
+
+        public void AlternateColors()
         {
             Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+        }
+        public bool isCheckmate()
+        {
             for (int rank = 0; rank < 8; rank++)
             {
                 for (int file = 0; file < 8; file++)
@@ -72,15 +85,16 @@ namespace ChessGame.strategy
                     {
                         List<Location> movements = piece.GetAvailableMovesOnBoard(new Location(rank, file));
                         Game.GetInstance().LimitPiecesMovements(piece, movements);
+                        Game.GetInstance().chessBoard.RemoveInvalidMoves(movements, piece.pieceColor);
                         if (movements.Count != 0)
                         {
-                            Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+                            //Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
                             return false;
                         }
                     }
                 }
             }
-            Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+            //Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
             return true;
         }
     }
