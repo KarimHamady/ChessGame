@@ -120,7 +120,11 @@ namespace ChessGame.GameNamespace
                     Piece piece = chessBoard.matrix[rank, file]!;
                     if (piece != null && piece.pieceColor != gameState.playerTurnColor)
                     {
-                        attackLocations.AddRange(piece.GetAvailableMovesOnBoard(new Location(rank, file)));
+                        if (piece is Pawn)
+                            attackLocations.AddRange(((Pawn)piece).GetPawnAttackLocations(new Location(rank, file)));
+                        else
+                            attackLocations.AddRange(piece.GetAvailableMovesOnBoard(new Location(rank, file)));
+
                         attackLocations.RemoveAll(location => !Game.GetInstance().chessBoard.IsMoveWithinBoard(location));
                     }
                 }

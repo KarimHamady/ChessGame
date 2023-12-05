@@ -60,6 +60,14 @@ namespace ChessGame.Logic
                 }
                 return pieceMovements;
             }
+            public List<Location> GetPawnAttackLocations(Location currentLocation)
+            {
+                int rankDirection = this.pieceColor == Color.White ? 1 : -1;
+                Location diagonalLeft = currentLocation + new Location(rankDirection * 1, -1);
+                Location diagonalRight = currentLocation + new Location(rankDirection * 1, 1);
+
+                return new List<Location> { diagonalLeft, diagonalRight };
+            }
         }
 
         internal class Knight : Piece
