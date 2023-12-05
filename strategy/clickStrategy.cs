@@ -1,9 +1,7 @@
 ﻿using ChessGame.GameNamespace;
 using ChessGame.Global;
-using ChessGame.Logic.BoardNamespace;
-using ChessGame.Logic.GameStateNamespace;
 using ChessGame.Logic.PieceNamespace;
-using ChessGame.Logic.CastleNamespace;
+using ChessGame.Statics;
 
 namespace ChessGame.strategy
 {
@@ -61,6 +59,7 @@ namespace ChessGame.strategy
                     }
                 }
                 Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+                Sound.PlayMoveSound();
             }
         }
     }

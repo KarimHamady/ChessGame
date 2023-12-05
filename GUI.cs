@@ -15,6 +15,7 @@ namespace ChessGame
             instance = this;
             InitializeComponent();
             DisplayBoard(Constants.WHITE_PLAYER_UP);
+            ShowCheckmateWindows();
         }
 
         public void DisplayBoard(bool isWhiteUp)
@@ -59,6 +60,13 @@ namespace ChessGame
                 AutoSize = true
             };
             instance!.Controls.Add(checkmateLabel);
+        }
+
+        public static void ShowCheckmateWindows()
+        {
+            CheckmateWindow checkmateWindow = new();
+            checkmateWindow.ShowDialog();
+            Application.Exit();
         }
     }
 }
