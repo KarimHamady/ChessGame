@@ -1,9 +1,6 @@
 ﻿using ChessGame.GameNamespace;
 using ChessGame.Global;
-using ChessGame.Logic.BoardNamespace;
-using ChessGame.Logic.GameStateNamespace;
 using ChessGame.Logic.PieceNamespace;
-using ChessGame.Logic.CastleNamespace;
 
 namespace ChessGame.strategy
 {
@@ -21,12 +18,6 @@ namespace ChessGame.strategy
             if (Game.GetInstance().gameState.check)
             {
                 Game.GetInstance().LimitPiecesMovements(clickedPiece, possibleMovements);
-                // TODO: improve
-                /*if (possibleMovements.Count == 0)
-                {
-                    GUI.AddCheckLabel();
-                    return;
-                }*/
             }
 
             GUI.ResetSquareColors();
@@ -44,7 +35,7 @@ namespace ChessGame.strategy
             {
                 Game.GetInstance().MovePieceFromSquareToSquare(Game.GetInstance().gameState.clickedLocation, clickLocation);
 
-                Game.GetInstance().castling.UpdateCastlingCondition(Game.GetInstance().gameState.playerTurnColor, Game.GetInstance().chessBoard.matrix[Game.GetInstance().gameState.clickedLocation.Rank, Game.GetInstance().gameState.clickedLocation.File]);
+                Game.GetInstance().castling.UpdateCastlingCondition(Game.GetInstance().gameState.playerTurnColor, Game.GetInstance().chessBoard.matrix[clickLocation.Rank, clickLocation.File]);
                 if (Game.GetInstance().chessBoard.matrix[clickLocation.Rank, clickLocation.File] is King)
                     Game.GetInstance().CheckAndHandleCastling(Game.GetInstance().gameState.clickedLocation, clickLocation);
 
@@ -58,10 +49,39 @@ namespace ChessGame.strategy
                         Game.chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
                         Game.GetInstance().gameState.checkingLocation = clickLocation;
                         Game.GetInstance().gameState.check = true;
+                        if (isCheckmate())
+                        {
+                            MessageBox.Show("CHECKMATE!");
+                        }
+                        break;
                     }
                 }
                 Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
             }
+        }
+
+        public bool isCheckmate()
+        {
+            Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+            for (int rank = 0; rank < 8; rank++)
+            {
+                for (int file = 0; file < 8; file++)
+                {
+                    Piece piece = Game.GetInstance().chessBoard.GetPieceAt(new Location(rank, file));
+                    if (piece != null && piece.pieceColor == Game.GetInstance().gameState.playerTurnColor)
+                    {
+                        List<Location> movements = piece.GetAvailableMovesOnBoard(new Location(rank, file));
+                        Game.GetInstance().LimitPiecesMovements(piece, movements);
+                        if (movements.Count != 0)
+                        {
+                            Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+                            return false;
+                        }
+                    }
+                }
+            }
+            Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+            return true;
         }
     }
 }
