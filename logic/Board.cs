@@ -8,34 +8,27 @@ namespace ChessGame.Logic
     {
         internal class Board
         {
-            private static Board? gameBoard = null;
             public Piece?[,] matrix;
 
-            private Board()
+            public Board()
             {
                 matrix = new Piece[Constants.NUMBER_OF_RANKS, Constants.NUMBER_OF_FILES];
                 AddPiecesToBoard();
             }
-            public static Board GetBoard()
+
+            public void AddPieceAt(Piece piece, Location location)
             {
-                if (gameBoard == null)
-                    gameBoard = new Board();
-                return gameBoard;
+                matrix[location.Rank, location.File] = piece;
             }
 
-            public static void AddPieceAtLocation(Piece piece, Location location)
+            public void RemovePieceAt(Location location)
             {
-                Board.GetBoard().matrix[location.Rank, location.File] = piece;
+                matrix[location.Rank, location.File] = null;
             }
 
-            public static void RemovePieceAtLocation(Location location)
+            public Piece? GetPieceAt(Location location)
             {
-                Board.GetBoard().matrix[location.Rank, location.File] = null;
-            }
-
-            public static Piece GetPieceAtLocation(Location location)
-            {
-                return gameBoard.matrix[location.Rank, location.File] != null ? gameBoard.matrix[location.Rank, location.File] : null;
+                return matrix[location.Rank, location.File];
             }
             private void AddPiecesToBoard()
             {
@@ -72,6 +65,53 @@ namespace ChessGame.Logic
                 matrix[7, 5] = new Bishop(pieceColor);
                 matrix[7, 6] = new Knight(pieceColor);
                 matrix[7, 7] = new Rook(pieceColor, RookSide.QueenSide);
+            }
+
+            public bool IsMoveWithinBoard(Location newLocation)
+            {
+                return newLocation.Rank >= 0 && newLocation.Rank < Constants.NUMBER_OF_RANKS && newLocation.File >= 0 && newLocation.File < Constants.NUMBER_OF_FILES;
+            }
+
+            public void RemoveInvalidMoves(List<Location> pieceMovements, Color pieceColor)
+            {
+                pieceMovements.RemoveAll(location => !IsMoveWithinBoard(location));
+                pieceMovements.RemoveAll(location => matrix[location.Rank, location.File] != null && matrix[location.Rank, location.File]!.pieceColor == pieceColor);
+            }
+            public void RemoveInvalidMovesForCheck(List<Location> pieceMovements, Location checkingPieceLocation, Location kingLocation, Color playerColor)
+            {
+                List<Location> allowedLocations = GetAvailableMovesInDirection(checkingPieceLocation, MapDirection(kingLocation.Rank - checkingPieceLocation.Rank), MapDirection(kingLocation.File - checkingPieceLocation.File), playerColor);
+                pieceMovements.RemoveAll(location => location != checkingPieceLocation && !allowedLocations.Contains(location));
+            }
+
+            public int MapDirection(int x)
+            {
+                return x > 0 ? +1 : x < 0 ? -1 : 0;
+            }
+
+            public List<Location> GetAvailableMovesInDirection(Location currentLocation, int rowDirection, int colDirection, Color pieceColor)
+            {
+                List<Location> pieceMovements = new();
+
+                for (int movement = 1; movement < 8; movement++)
+                {
+                    Location newLocation = new(currentLocation.Rank + (movement * rowDirection), currentLocation.File + (movement * colDirection));
+
+                    if (!IsMoveWithinBoard(newLocation))
+                        break; // Stop if the new location is outside the board
+
+                    if (matrix[newLocation.Rank, newLocation.File] != null)
+                    {
+                        if (matrix[newLocation.Rank, newLocation.File]!.pieceColor != pieceColor)
+                        {
+                            pieceMovements.Add(newLocation);
+                            // Stop if there is a piece in the way unless it's opposite color
+                        }
+                        break;
+                    }
+                    pieceMovements.Add(newLocation);
+                }
+
+                return pieceMovements;
             }
         }
 

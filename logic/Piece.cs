@@ -1,9 +1,5 @@
-﻿using ChessGame.FacadeNamespace;
+﻿using ChessGame.GameNamespace;
 using ChessGame.Global;
-using ChessGame.logic;
-using ChessGame.Logic.BoardNamespace;
-using ChessGame.Logic.CheckerNamespace;
-using ChessGame.Logic.GameNamespace;
 
 namespace ChessGame.Logic
 {
@@ -33,36 +29,36 @@ namespace ChessGame.Logic
                 Location forwardOne = currentLocation + new Location(rankDirection * 1, 0);
                 Piece? piece;
 
-                if (Checker.IsMoveWithinBoard(forwardOne))
+                if (Game.GetInstance().chessBoard.IsMoveWithinBoard(forwardOne))
                 {
-                    piece = Board.GetBoard().matrix[forwardOne.Rank, forwardOne.File];
+                    piece = Game.GetInstance().chessBoard.matrix[forwardOne.Rank, forwardOne.File];
                     if (piece == null)
                         pieceMovements.Add(forwardOne); // Move forward
                 }
                 Location fowardTwo = currentLocation + new Location(rankDirection * 2, 0);
-                if (Checker.IsMoveWithinBoard(fowardTwo))
+                if (Game.GetInstance().chessBoard.IsMoveWithinBoard(fowardTwo))
                 {
-                    piece = Board.GetBoard().matrix[fowardTwo.Rank, fowardTwo.File];
+                    piece = Game.GetInstance().chessBoard.matrix[fowardTwo.Rank, fowardTwo.File];
                     if (piece == null && (rankDirection * currentLocation.Rank == 1 || currentLocation.Rank * rankDirection == -6))
                         pieceMovements.Add(fowardTwo); // Move forward (initial double move)
                 }
                 // Pawn can only capture diagonal if there is an opponent piece
                 Location diagonalLeft = currentLocation + new Location(rankDirection * 1, -1);
-                if (Checker.IsMoveWithinBoard(diagonalLeft))
+                if (Game.GetInstance().chessBoard.IsMoveWithinBoard(diagonalLeft))
                 {
-                    piece = Board.GetBoard().matrix[diagonalLeft.Rank, diagonalLeft.File];
-                    if (piece != null && piece.pieceColor != Game.playerTurnColor)
+                    piece = Game.GetInstance().chessBoard.matrix[diagonalLeft.Rank, diagonalLeft.File];
+                    if (piece != null && piece.pieceColor != Game.GetInstance().gameState.playerTurnColor)
                         pieceMovements.Add(diagonalLeft); // Capture diagonally left
                 }
 
                 Location diagonalRight = currentLocation + new Location(rankDirection * 1, 1);
-                if (Checker.IsMoveWithinBoard(diagonalRight))
+                if (Game.GetInstance().chessBoard.IsMoveWithinBoard(diagonalRight))
                 {
-                    piece = Board.GetBoard().matrix[diagonalRight.Rank, diagonalRight.File];
-                    if (piece != null && piece.pieceColor != Game.playerTurnColor)
+                    piece = Game.GetInstance().chessBoard.matrix[diagonalRight.Rank, diagonalRight.File];
+                    if (piece != null && piece.pieceColor != Game.GetInstance().gameState.playerTurnColor)
                         pieceMovements.Add(diagonalRight); // Capture diagonally right
                 }
-                Checker.RemoveInvalidMoves(pieceMovements);
+                Game.GetInstance().chessBoard.RemoveInvalidMoves(pieceMovements, pieceColor);
                 return pieceMovements;
             }
         }
@@ -77,18 +73,19 @@ namespace ChessGame.Logic
             }
             public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
             {
-                List<Location> pieceMovements = new();
+                List<Location> pieceMovements = new()
+                {
+                    currentLocation + new Location(-2, -1),
+                    currentLocation + new Location(-2, 1),
+                    currentLocation + new Location(2, -1),
+                    currentLocation + new Location(2, 1),
+                    currentLocation + new Location(-1, -2),
+                    currentLocation + new Location(-1, 2),
+                    currentLocation + new Location(1, -2),
+                    currentLocation + new Location(1, 2)
+                };
 
-                pieceMovements.Add(currentLocation + new Location(-2, -1));
-                pieceMovements.Add(currentLocation + new Location(-2, 1));
-                pieceMovements.Add(currentLocation + new Location(2, -1));
-                pieceMovements.Add(currentLocation + new Location(2, 1));
-                pieceMovements.Add(currentLocation + new Location(-1, -2));
-                pieceMovements.Add(currentLocation + new Location(-1, 2));
-                pieceMovements.Add(currentLocation + new Location(1, -2));
-                pieceMovements.Add(currentLocation + new Location(1, 2));
-
-                Checker.RemoveInvalidMoves(pieceMovements);
+                Game.GetInstance().chessBoard.RemoveInvalidMoves(pieceMovements, pieceColor);
                 return pieceMovements;
             }
         }
@@ -108,9 +105,9 @@ namespace ChessGame.Logic
                 List<Location> pieceMovements = new();
 
                 foreach (Location movement in movementDirection)
-                    pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File));
+                    pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File, Game.GetInstance().GetPlayerColor()));
 
-                Checker.RemoveInvalidMoves(pieceMovements);
+                Game.GetInstance().chessBoard.RemoveInvalidMoves(pieceMovements, pieceColor);
                 return pieceMovements;
             }
         }
@@ -133,9 +130,9 @@ namespace ChessGame.Logic
                 List<Location> pieceMovements = new();
 
                 foreach (Location movement in movementDirection)
-                    pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File));
+                    pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File, Game.GetInstance().GetPlayerColor()));
 
-                Checker.RemoveInvalidMoves(pieceMovements);
+                Game.GetInstance().chessBoard.RemoveInvalidMoves(pieceMovements, pieceColor);
                 return pieceMovements;
             }
 
@@ -154,16 +151,16 @@ namespace ChessGame.Logic
             {
                 List<Location> pieceMovements = new();
 
-                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, -1)); // Top-left
-                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, 1));  // Top-right
-                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, -1));  // Bottom-left
-                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, 1));   // Bottom-right
-                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 0, -1)); // Left
-                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 0, 1));  // Right
-                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, -1, 0)); // Up
-                pieceMovements.AddRange(Checker.GetAvailableMovesInDirection(currentLocation, 1, 0));  // Down
+                pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, -1, -1, Game.GetInstance().GetPlayerColor())); // Top-left
+                pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, -1, 1, Game.GetInstance().GetPlayerColor()));  // Top-right
+                pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, 1, -1, Game.GetInstance().GetPlayerColor()));  // Bottom-left
+                pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, 1, 1, Game.GetInstance().GetPlayerColor()));   // Bottom-right
+                pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, 0, -1, Game.GetInstance().GetPlayerColor())); // Left
+                pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, 0, 1, Game.GetInstance().GetPlayerColor()));  // Right
+                pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, -1, 0, Game.GetInstance().GetPlayerColor())); // Up
+                pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, 1, 0, Game.GetInstance().GetPlayerColor()));  // Down
 
-                Checker.RemoveInvalidMoves(pieceMovements);
+                Game.GetInstance().chessBoard.RemoveInvalidMoves(pieceMovements, pieceColor);
                 return pieceMovements;
             }
         }
@@ -178,38 +175,39 @@ namespace ChessGame.Logic
             }
             public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
             {
-                List<Location> pieceMovements = new();
+                List<Location> pieceMovements = new()
+                {
+                    currentLocation + new Location(-1, -1),
+                    currentLocation + new Location(-1, 0),
+                    currentLocation + new Location(-1, 1),
+                    currentLocation + new Location(0, -1),
+                    currentLocation + new Location(0, 1),
+                    currentLocation + new Location(1, -1),
+                    currentLocation + new Location(1, 0),
+                    currentLocation + new Location(1, 1)
+                };
 
-                pieceMovements.Add(currentLocation + new Location(-1, -1));
-                pieceMovements.Add(currentLocation + new Location(-1, 0));
-                pieceMovements.Add(currentLocation + new Location(-1, 1));
-                pieceMovements.Add(currentLocation + new Location(0, -1));
-                pieceMovements.Add(currentLocation + new Location(0, 1));
-                pieceMovements.Add(currentLocation + new Location(1, -1));
-                pieceMovements.Add(currentLocation + new Location(1, 0));
-                pieceMovements.Add(currentLocation + new Location(1, 1));
-
-                if (!Game.check)
+                if (!Game.GetInstance().gameState.check)
                 {
                     // FIXME Check if a piece is blocking the castling (+1, -1) before allowing (+2, -2) using attackedLocations list
-                    if (Game.playerTurnColor == Color.White)
+                    if (Game.GetInstance().gameState.playerTurnColor == Color.White)
                     {
-                        if (Castle.whiteCastlingAllowedKingSide == true)
+                        if (Game.GetInstance().castling.whiteCastlingAllowedKingSide == true)
                             pieceMovements.Add(currentLocation + new Location(0, -2));
-                        if (Castle.whiteCastlingAllowedQueenSide == true)
+                        if (Game.GetInstance().castling.whiteCastlingAllowedQueenSide == true)
                             pieceMovements.Add(currentLocation + new Location(0, 2));
                     }
-                    else if (Game.playerTurnColor == Color.Black)
+                    else if (Game.GetInstance().gameState.playerTurnColor == Color.Black)
                     {
-                        if (Castle.blackCastlingAllowedKingSide == true)
+                        if (Game.GetInstance().castling.blackCastlingAllowedKingSide == true)
                             pieceMovements.Add(currentLocation + new Location(0, -2));
-                        if (Castle.blackCastlingAllowedQueenSide == true)
+                        if (Game.GetInstance().castling.blackCastlingAllowedQueenSide == true)
                             pieceMovements.Add(currentLocation + new Location(0, 2));
                     }
                 }
-                Checker.RemoveInvalidMoves(pieceMovements);
-                if (Game.playerTurnColor == this.pieceColor)
-                    pieceMovements.RemoveAll(location => Facade.GetAllAttackedLocations().Contains(location));
+                Game.GetInstance().chessBoard.RemoveInvalidMoves(pieceMovements, pieceColor);
+                if (Game.GetInstance().gameState.playerTurnColor == this.pieceColor)
+                    pieceMovements.RemoveAll(location => Game.GetInstance().GetAllAttackedLocations().Contains(location));
                 return pieceMovements;
             }
         }

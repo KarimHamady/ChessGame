@@ -1,7 +1,6 @@
-using ChessGame.FacadeNamespace;
+using ChessGame.GameNamespace;
 using ChessGame.global;
 using ChessGame.Global;
-using ChessGame.Logic.BoardNamespace;
 using ChessGame.Statics;
 
 namespace ChessGame
@@ -9,13 +8,12 @@ namespace ChessGame
     public partial class GUI : Form
     {
         private static Form? instance;
-        static readonly PictureBox[,] chessboardPictureBoxes = Facade.chessboardPictureBoxes;
+        static readonly PictureBox[,] chessboardPictureBoxes = Game.chessboardPictureBoxes;
 
         public GUI()
         {
             instance = this;
             InitializeComponent();
-            Board.GetBoard();
             DisplayBoard(Constants.WHITE_PLAYER_UP);
         }
 
@@ -30,8 +28,8 @@ namespace ChessGame
                     chessboardPictureBoxes[rank, file] = new ChessTile(
                             location: chessTileLocation,
                             color: Static.GetSquareColor(rank, file),
-                            image: Facade.GetImage(rank, file),
-                            onPressed: (tileLocation) => Facade.HandlePieceClick(isWhiteUp ? tileLocation : tileLocation.Inverted)
+                            image: Game.GetInstance().GetImage(rank, file),
+                            onPressed: (tileLocation) => Game.GetInstance().HandlePieceClick(isWhiteUp ? tileLocation : tileLocation.Inverted)
                         );
                     Controls.Add(chessboardPictureBoxes[rank, file]);
                 }

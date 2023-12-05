@@ -1,9 +1,9 @@
-﻿using ChessGame.FacadeNamespace;
+﻿using ChessGame.GameNamespace;
 using ChessGame.Global;
-using ChessGame.logic;
 using ChessGame.Logic.BoardNamespace;
-using ChessGame.Logic.GameNamespace;
+using ChessGame.Logic.GameStateNamespace;
 using ChessGame.Logic.PieceNamespace;
+using ChessGame.Logic.CastleNamespace;
 
 namespace ChessGame.strategy
 {
@@ -16,11 +16,11 @@ namespace ChessGame.strategy
     {
         public override void processClick(Location clickLocation)
         {
-            Piece clickedPiece = Board.GetPieceAtLocation(clickLocation);
+            Piece clickedPiece = Game.GetInstance().chessBoard.GetPieceAt(clickLocation);
             List<Location> possibleMovements = clickedPiece.GetAvailableMovesOnBoard(clickLocation);
-            if (Game.check)
+            if (Game.GetInstance().gameState.check)
             {
-                Facade.LimitPiecesMovements(clickedPiece, possibleMovements);
+                Game.GetInstance().LimitPiecesMovements(clickedPiece, possibleMovements);
                 // TODO: improve
                 /*if (possibleMovements.Count == 0)
                 {
@@ -31,8 +31,8 @@ namespace ChessGame.strategy
 
             GUI.ResetSquareColors();
             GUI.ColorLocations(possibleMovements, Color.Gold);
-            Game.clickedLocation = clickLocation;
-            Game.possibleMovements = possibleMovements;
+            Game.GetInstance().gameState.clickedLocation = clickLocation;
+            Game.GetInstance().gameState.possibleMovements = possibleMovements;
         }
     }
 
@@ -40,27 +40,27 @@ namespace ChessGame.strategy
     {
         public override void processClick(Location clickLocation)
         {
-            if (Game.possibleMovements.Contains(clickLocation))
+            if (Game.GetInstance().gameState.possibleMovements.Contains(clickLocation))
             {
-                Facade.MovePieceFromSquareToSquare(Game.clickedLocation, clickLocation);
+                Game.GetInstance().MovePieceFromSquareToSquare(Game.GetInstance().gameState.clickedLocation, clickLocation);
 
-                Castle.UpdateCastlingCondition(Game.playerTurnColor, Board.GetBoard().matrix[Game.clickedLocation.Rank, Game.clickedLocation.File]);
-                if (Board.GetBoard().matrix[clickLocation.Rank, clickLocation.File] is King)
-                    Facade.CheckAndHandleCastling(Game.clickedLocation, clickLocation);
+                Game.GetInstance().castling.UpdateCastlingCondition(Game.GetInstance().gameState.playerTurnColor, Game.GetInstance().chessBoard.matrix[Game.GetInstance().gameState.clickedLocation.Rank, Game.GetInstance().gameState.clickedLocation.File]);
+                if (Game.GetInstance().chessBoard.matrix[clickLocation.Rank, clickLocation.File] is King)
+                    Game.GetInstance().CheckAndHandleCastling(Game.GetInstance().gameState.clickedLocation, clickLocation);
 
                 GUI.ResetSquareColors();
-                Game.ResetGameCheckVariables();
-                foreach (Location location in Board.GetPieceAtLocation(clickLocation).GetAvailableMovesOnBoard(clickLocation))
+                Game.GetInstance().gameState.ResetGameCheckVariables();
+                foreach (Location location in Game.GetInstance().chessBoard.GetPieceAt(clickLocation).GetAvailableMovesOnBoard(clickLocation))
                 {
-                    Piece? piece = Board.GetBoard().matrix[location.Rank, location.File];
-                    if (piece != null && piece is King && piece.pieceColor != Game.playerTurnColor)
+                    Piece? piece = Game.GetInstance().chessBoard.matrix[location.Rank, location.File];
+                    if (piece != null && piece is King && piece.pieceColor != Game.GetInstance().gameState.playerTurnColor)
                     {
-                        Facade.chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
-                        Game.checkingLocation = clickLocation;
-                        Game.check = true;
+                        Game.chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
+                        Game.GetInstance().gameState.checkingLocation = clickLocation;
+                        Game.GetInstance().gameState.check = true;
                     }
                 }
-                Game.playerTurnColor = Game.playerTurnColor == Color.White ? Color.Black : Color.White;
+                Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
             }
         }
     }
