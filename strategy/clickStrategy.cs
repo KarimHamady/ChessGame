@@ -35,8 +35,11 @@ namespace ChessGame.strategy
                 Game.GetInstance().MovePieceFromSquareToSquare(Game.GetInstance().gameState.clickedLocation, clickLocation);
 
                 Game.GetInstance().castling.UpdateCastlingCondition(Game.GetInstance().gameState.playerTurnColor, Game.GetInstance().chessBoard.matrix[clickLocation.Rank, clickLocation.File]);
-                if (Game.GetInstance().chessBoard.matrix[clickLocation.Rank, clickLocation.File] is King)
+                if (Game.GetInstance().chessBoard.GetPieceAt(clickLocation) is King)
                     Game.GetInstance().CheckAndHandleCastling(Game.GetInstance().gameState.clickedLocation, clickLocation);
+                else if (Game.GetInstance().chessBoard.GetPieceAt(clickLocation) is Pawn)
+                    Game.GetInstance().CheckAndHandlePawnPromotion(clickLocation);
+
 
                 GUI.ResetSquareColors();
                 Game.GetInstance().gameState.ResetGameCheckVariables();

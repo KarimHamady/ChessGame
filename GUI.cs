@@ -5,6 +5,55 @@ using ChessGame.Statics;
 
 namespace ChessGame
 {
+    public class CustomMessageBox : Form
+    {
+        public PieceType SelectedPieceType { get; private set; }
+
+        public CustomMessageBox()
+        {
+            InitializeComponent();
+        }
+
+        private void InitializeComponent()
+        {
+            AddPieceTypeButton(PieceType.Rook);
+            AddPieceTypeButton(PieceType.Knight);
+            AddPieceTypeButton(PieceType.Bishop);
+            AddPieceTypeButton(PieceType.Queen);
+
+            // Handle form events as needed
+            this.Text = "Promote to";
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.ControlBox = false;
+        }
+
+        private void AddPieceTypeButton(PieceType pieceType)
+        {
+            var button = new Button
+            {
+                Text = Enum.GetName(typeof(Statics.PieceType), pieceType),
+                Size = new System.Drawing.Size(75, 23),
+                Location = new System.Drawing.Point(10, 10),  // Adjust button position
+            };
+
+            button.Click += (sender, e) =>
+            {
+                SelectedPieceType = pieceType;
+                DialogResult = DialogResult.OK;
+                Close();
+            };
+
+            Controls.Add(button);
+
+            // Adjust vertical position for the next button
+            int verticalSpacing = 35;
+            foreach (Control control in Controls)
+            {
+                control.Location = new System.Drawing.Point(control.Location.X, control.Location.Y + verticalSpacing);
+            }
+        }
+    }
     public partial class GUI : Form
     {
         private static Form? instance;
@@ -15,6 +64,22 @@ namespace ChessGame
             instance = this;
             InitializeComponent();
             DisplayBoard(Constants.WHITE_PLAYER_UP);
+        }
+        public static PieceType ShowCustomPieceTypeDialog()
+        {
+            using (var customMessageBox = new CustomMessageBox())
+            {
+                DialogResult result = customMessageBox.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    // User clicked one of the piece type buttons
+                    return customMessageBox.SelectedPieceType;
+
+                }
+                return PieceType.Queen;
+                // You can optionally handle DialogResult.Cancel if needed
+            }
         }
 
         public void DisplayBoard(bool isWhiteUp)
@@ -35,6 +100,7 @@ namespace ChessGame
                 }
             }
         }
+
 
         public static void ColorLocations(List<Location> locations, Color color)
         {

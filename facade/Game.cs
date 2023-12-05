@@ -83,6 +83,18 @@ namespace ChessGame.GameNamespace
             else if (castling.IsQueenSideCastling(currentLocation, newLocation))
                 MoveRookBesideQueen(newLocation);
         }
+        public void CheckAndHandlePawnPromotion(Location location)
+        {
+
+            if (location.Rank == 0 || location.Rank == Constants.NUMBER_OF_RANKS - 1)
+            {
+                PieceType pieceType = GUI.ShowCustomPieceTypeDialog();
+
+                chessBoard.matrix[location.Rank, location.File] = PieceFactory.CreatePiece(pieceType, location.Rank == 0 ? Color.Black : Color.White);
+                UpdateImageAtLocation(location);
+            }
+        }
+
 
         public void LimitPiecesMovements(Piece clickedPiece, List<Location> possibleMovements)
         {

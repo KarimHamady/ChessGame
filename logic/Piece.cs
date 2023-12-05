@@ -1,10 +1,33 @@
 ﻿using ChessGame.GameNamespace;
 using ChessGame.Global;
+using ChessGame.Statics;
 
 namespace ChessGame.Logic
 {
     namespace PieceNamespace
     {
+        public class PieceFactory
+        {
+            public static Piece CreatePiece(PieceType pieceType, Color color /*params object[] additionalArgs*/)
+            {
+                string typeName = pieceType.ToString();
+
+                // Assumes all piece types are in the same namespace as the PieceFactory class
+                string fullTypeName = $"{typeof(PieceFactory).Namespace}.{typeName}";
+
+                Type pieceTypeClass = Type.GetType(fullTypeName);
+
+                if (pieceTypeClass != null && typeof(Piece).IsAssignableFrom(pieceTypeClass))
+                {
+                    //return Activator.CreateInstance(pieceTypeClass, additionalArgs) as Piece;
+                    return Activator.CreateInstance(pieceTypeClass, color) as Piece;
+
+                }
+
+                // Handle the case when the type is not found or not derived from Piece
+                throw new InvalidOperationException($"Cannot create a piece of type {pieceType}");
+            }
+        }
         public abstract class Piece
         {
             public Statics.PieceType pieceType = Statics.PieceType.None;
@@ -15,18 +38,17 @@ namespace ChessGame.Logic
 
         internal class Pawn : Piece
         {
+            public int RankDirection { get { return pieceColor == Color.White ? 1 : -1; } }
             public Pawn(Color color)
             {
                 pieceType = Statics.PieceType.Pawn;
                 pieceColor = color;
-                capturesLikeItsMove = false;
             }
             public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
             {
                 List<Location> pieceMovements = new();
 
-                int rankDirection = this.pieceColor == Color.White ? 1 : -1;
-                Location forwardOne = currentLocation + new Location(rankDirection * 1, 0);
+                Location forwardOne = currentLocation + new Location(RankDirection * 1, 0);
                 Piece? piece;
 
                 if (Game.GetInstance().chessBoard.IsMoveWithinBoard(forwardOne))
@@ -35,15 +57,15 @@ namespace ChessGame.Logic
                     if (piece == null)
                         pieceMovements.Add(forwardOne); // Move forward
                 }
-                Location fowardTwo = currentLocation + new Location(rankDirection * 2, 0);
+                Location fowardTwo = currentLocation + new Location(RankDirection * 2, 0);
                 if (Game.GetInstance().chessBoard.IsMoveWithinBoard(fowardTwo))
                 {
                     piece = Game.GetInstance().chessBoard.matrix[fowardTwo.Rank, fowardTwo.File];
-                    if (piece == null && (rankDirection * currentLocation.Rank == 1 || currentLocation.Rank * rankDirection == -6))
+                    if (piece == null && (RankDirection * currentLocation.Rank == 1 || currentLocation.Rank * RankDirection == -6))
                         pieceMovements.Add(fowardTwo); // Move forward (initial double move)
                 }
                 // Pawn can only capture diagonal if there is an opponent piece
-                Location diagonalLeft = currentLocation + new Location(rankDirection * 1, -1);
+                Location diagonalLeft = currentLocation + new Location(RankDirection * 1, -1);
                 if (Game.GetInstance().chessBoard.IsMoveWithinBoard(diagonalLeft))
                 {
                     piece = Game.GetInstance().chessBoard.matrix[diagonalLeft.Rank, diagonalLeft.File];
@@ -51,7 +73,7 @@ namespace ChessGame.Logic
                         pieceMovements.Add(diagonalLeft); // Capture diagonally left
                 }
 
-                Location diagonalRight = currentLocation + new Location(rankDirection * 1, 1);
+                Location diagonalRight = currentLocation + new Location(RankDirection * 1, 1);
                 if (Game.GetInstance().chessBoard.IsMoveWithinBoard(diagonalRight))
                 {
                     piece = Game.GetInstance().chessBoard.matrix[diagonalRight.Rank, diagonalRight.File];
@@ -62,9 +84,9 @@ namespace ChessGame.Logic
             }
             public List<Location> GetPawnAttackLocations(Location currentLocation)
             {
-                int rankDirection = this.pieceColor == Color.White ? 1 : -1;
-                Location diagonalLeft = currentLocation + new Location(rankDirection * 1, -1);
-                Location diagonalRight = currentLocation + new Location(rankDirection * 1, 1);
+                int RankDirection = this.pieceColor == Color.White ? 1 : -1;
+                Location diagonalLeft = currentLocation + new Location(RankDirection * 1, -1);
+                Location diagonalRight = currentLocation + new Location(RankDirection * 1, 1);
 
                 return new List<Location> { diagonalLeft, diagonalRight };
             }
@@ -76,7 +98,7 @@ namespace ChessGame.Logic
             {
                 pieceType = Statics.PieceType.Knight;
                 pieceColor = color;
-                capturesLikeItsMove = true;
+
             }
             public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
             {
@@ -103,7 +125,7 @@ namespace ChessGame.Logic
             {
                 pieceType = Statics.PieceType.Bishop;
                 pieceColor = color;
-                capturesLikeItsMove = true;
+
             }
 
             public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
@@ -122,12 +144,18 @@ namespace ChessGame.Logic
             List<Location> movementDirection = new() { new Location(0, -1), new Location(0, 1), new Location(-1, 0), new Location(1, 0) };
             public Statics.RookSide _rookSide;
 
+            public Rook(Color color)
+            {
+                pieceType = Statics.PieceType.Rook;
+                pieceColor = color;
+                _rookSide = RookSide.KingSide;
+            }
             public Rook(Color color, Statics.RookSide rookSide)
             {
                 pieceType = Statics.PieceType.Rook;
                 pieceColor = color;
-                capturesLikeItsMove = true;
-                _rookSide = rookSide;
+
+                //_rookSide = rookSide;
             }
 
             public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
@@ -149,7 +177,7 @@ namespace ChessGame.Logic
             {
                 pieceType = Statics.PieceType.Queen;
                 pieceColor = color;
-                capturesLikeItsMove = true;
+
             }
             public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
             {
@@ -174,7 +202,7 @@ namespace ChessGame.Logic
             {
                 pieceType = Statics.PieceType.King;
                 pieceColor = color;
-                capturesLikeItsMove = true;
+
             }
             public override List<Location> GetAvailableMovesOnBoard(Location currentLocation)
             {
