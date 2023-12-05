@@ -33,15 +33,19 @@ namespace ChessGame.Logic
                 Location forwardOne = currentLocation + new Location(rankDirection * 1, 0);
                 Piece? piece;
 
-                piece = Board.GetBoard().matrix[forwardOne.Rank, forwardOne.File];
-                if (piece == null)
-                    pieceMovements.Add(forwardOne); // Move forward
-
+                if (Checker.IsMoveWithinBoard(forwardOne))
+                {
+                    piece = Board.GetBoard().matrix[forwardOne.Rank, forwardOne.File];
+                    if (piece == null)
+                        pieceMovements.Add(forwardOne); // Move forward
+                }
                 Location fowardTwo = currentLocation + new Location(rankDirection * 2, 0);
-                piece = Board.GetBoard().matrix[fowardTwo.Rank, fowardTwo.File];
-                if (piece == null && (rankDirection * currentLocation.Rank == 1 || currentLocation.Rank * rankDirection == -6))
-                    pieceMovements.Add(fowardTwo); // Move forward (initial double move)
-
+                if (Checker.IsMoveWithinBoard(fowardTwo))
+                {
+                    piece = Board.GetBoard().matrix[fowardTwo.Rank, fowardTwo.File];
+                    if (piece == null && (rankDirection * currentLocation.Rank == 1 || currentLocation.Rank * rankDirection == -6))
+                        pieceMovements.Add(fowardTwo); // Move forward (initial double move)
+                }
                 // Pawn can only capture diagonal if there is an opponent piece
                 Location diagonalLeft = currentLocation + new Location(rankDirection * 1, -1);
                 if (Checker.IsMoveWithinBoard(diagonalLeft))

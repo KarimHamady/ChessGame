@@ -62,17 +62,5 @@ namespace ChessGame
             };
             instance!.Controls.Add(checkmateLabel);
         }
-
-        public static void AddCheckLabel()
-        {
-            Label checkmateLabel = new()
-            {
-                Text = "Check!",
-                Font = new Font("Arial", 24, FontStyle.Bold), // Adjust font size and style
-                Location = new Point(Constants.CHECK_LABEL_LOCATION, 100),
-                AutoSize = true
-            };
-            instance!.Controls.Add(checkmateLabel);
-        }
     }
 }

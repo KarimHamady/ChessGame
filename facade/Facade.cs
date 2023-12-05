@@ -5,6 +5,7 @@ using ChessGame.Logic.CheckerNamespace;
 using ChessGame.Logic.GameNamespace;
 using ChessGame.Logic.PieceNamespace;
 using ChessGame.Statics;
+using ChessGame.strategy;
 
 namespace ChessGame.FacadeNamespace
 {
@@ -44,54 +45,22 @@ namespace ChessGame.FacadeNamespace
         }
         public static void HandlePieceClick(Location clickLocation)
         {
+            GUI.ResetSquareColors();
+            ClickStrategy clickStrategy = GetStrategy(clickLocation);
+            if (clickStrategy != null)
+                clickStrategy.processClick(clickLocation);
+        }
+
+        private static ClickStrategy? GetStrategy(Location clickLocation)
+        {
             Piece? clickedPiece = Board.GetPieceAtLocation(clickLocation);
 
             if (clickedPiece != null && clickedPiece.pieceColor == Game.playerTurnColor)
-            {
-                // Get the possible movements for the clicked piece
-                List<Location> possibleMovements = clickedPiece.GetAvailableMovesOnBoard(clickLocation);
-                if (Game.check)
-                {
-                    LimitPiecesMovements(clickedPiece, possibleMovements);
-                    // TODO: improve
-                    /*if (possibleMovements.Count == 0)
-                    {
-                        GUI.AddCheckLabel();
-                        return;
-                    }*/
-                }
-
-                GUI.ResetSquareColors();
-                GUI.ColorLocations(possibleMovements, Color.Gold);
-                Game.clickedLocation = clickLocation;
-                Game.possibleMovements = possibleMovements;
-            }
+                return new ClickBeforeMoveStrategy();
             else if (Game.clickedLocation.Rank != -1 && Game.clickedLocation.File != -1)
-            {
-                if (Game.possibleMovements.Contains(clickLocation))
-                {
-                    MovePieceFromSquareToSquare(Game.clickedLocation, clickLocation);
-                    Castle.UpdateCastlingCondition(Game.playerTurnColor, Board.GetBoard().matrix[Game.clickedLocation.Rank, Game.clickedLocation.File]);
-                    if (Board.GetBoard().matrix[clickLocation.Rank, clickLocation.File] is King)
-                        CheckAndHandleCastling(Game.clickedLocation, clickLocation);
-
-                    GUI.ResetSquareColors();
-                    Game.ResetGameCheckVariables();
-                    foreach (Location location in Board.GetPieceAtLocation(clickLocation).GetAvailableMovesOnBoard(clickLocation))
-                    {
-                        Piece? piece = Board.GetBoard().matrix[location.Rank, location.File];
-                        if (piece != null && piece is King && piece.pieceColor != Game.playerTurnColor)
-                        {
-                            chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
-                            Game.checkingLocation = clickLocation;
-                            Game.check = true;
-                        }
-                    }
-                    Game.playerTurnColor = Game.playerTurnColor == Color.White ? Color.Black : Color.White;
-                }
-            }
+                return new ClickAfterMoveStrategy();
+            return null;
         }
-
         private static void MoveRookBesideKing(Location kingLocation)
         {
             MovePieceFromSquareToSquare(Castle.GetRookLocationFromCastlingSide(Game.playerTurnColor, CastlingSide.KingSide), new Location(kingLocation.Rank, kingLocation.File + 1));
