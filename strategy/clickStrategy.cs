@@ -58,13 +58,14 @@ namespace ChessGame.strategy
                     Game.chessboardPictureBoxes[location.Rank, location.File].BackColor = Color.Red;
                     Game.GetInstance().gameState.checkingLocation = clickLocation;
                     Game.GetInstance().gameState.check = true;
-                    Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
+                    AlternateColors();
                     if (isCheckmate())
                     {
                         MessageBox.Show("CHECKMATE!");
+                        Application.Restart();
+                        Environment.Exit(0);
                     }
-                    Game.GetInstance().gameState.playerTurnColor = Game.GetInstance().gameState.playerTurnColor == Color.White ? Color.Black : Color.White;
-
+                    AlternateColors();
                     break;
                 }
             }
