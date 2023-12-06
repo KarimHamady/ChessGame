@@ -12,7 +12,7 @@ namespace ChessGame.Logic
 
             public Board()
             {
-                matrix = new Piece[Constants.NUMBER_OF_RANKS, Constants.NUMBER_OF_FILES];
+                matrix = new Piece[Static.NUMBER_OF_RANKS, Static.NUMBER_OF_FILES];
                 AddPiecesToBoard();
             }
 
@@ -44,14 +44,14 @@ namespace ChessGame.Logic
                 matrix[0, 7] = new Rook(pieceColor, RookSide.QueenSide);
 
                 // Add white pawns on the second rank
-                for (int file = 0; file < Constants.NUMBER_OF_FILES; file++)
+                for (int file = 0; file < Static.NUMBER_OF_FILES; file++)
                 {
                     matrix[1, file] = new Pawn(pieceColor);
                 }
 
                 // Add black pawns on the seventh rank
                 pieceColor = Color.Black;
-                for (int file = 0; file < Constants.NUMBER_OF_FILES; file++)
+                for (int file = 0; file < Static.NUMBER_OF_FILES; file++)
                 {
                     matrix[6, file] = new Pawn(pieceColor);
                 }
@@ -69,7 +69,7 @@ namespace ChessGame.Logic
 
             public bool IsMoveWithinBoard(Location newLocation)
             {
-                return newLocation.Rank >= 0 && newLocation.Rank < Constants.NUMBER_OF_RANKS && newLocation.File >= 0 && newLocation.File < Constants.NUMBER_OF_FILES;
+                return newLocation.Rank >= 0 && newLocation.Rank < Static.NUMBER_OF_RANKS && newLocation.File >= 0 && newLocation.File < Static.NUMBER_OF_FILES;
             }
 
             public void RemoveInvalidMoves(List<Location> pieceMovements, Color pieceColor)

@@ -1,6 +1,7 @@
 ﻿using ChessGame.GameNamespace;
 using ChessGame.Global;
 using ChessGame.Logic.PieceNamespace;
+using ChessGame.Statics;
 
 namespace ChessGame.strategy
 {
@@ -32,6 +33,9 @@ namespace ChessGame.strategy
         {
             if (Game.GetInstance().gameState.possibleMovements.Contains(clickLocation))
             {
+
+                Sound.PlayMoveSound();
+
                 Game.GetInstance().MovePieceFromSquareToSquare(Game.GetInstance().gameState.clickedLocation, clickLocation);
 
                 Game.GetInstance().castling.UpdateCastlingCondition(Game.GetInstance().gameState.playerTurnColor, Game.GetInstance().chessBoard.matrix[clickLocation.Rank, clickLocation.File]);
@@ -64,9 +68,11 @@ namespace ChessGame.strategy
                     AlternateColors();
                     if (isCheckmate())
                     {
-                        MessageBox.Show("CHECKMATE!");
-                        Application.Restart();
-                        Environment.Exit(0);
+                        Sound.PlayCheckmateSound();
+                        DialogResult result = new CheckmateWindow().ShowDialog();
+                    } else
+                    {
+                        Sound.PlayCheckSound();
                     }
                     AlternateColors();
                     break;

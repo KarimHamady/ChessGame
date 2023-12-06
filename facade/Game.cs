@@ -14,7 +14,7 @@ namespace ChessGame.GameNamespace
         public Board chessBoard;
         public GameState gameState;
         public Castling castling;
-        public static PictureBox[,] chessboardPictureBoxes = new PictureBox[Constants.NUMBER_OF_RANKS, Constants.NUMBER_OF_FILES];
+        public static PictureBox[,] chessboardPictureBoxes = new PictureBox[Static.NUMBER_OF_RANKS, Static.NUMBER_OF_FILES];
         private Game()
         {
             chessBoard = new Board();
@@ -86,7 +86,7 @@ namespace ChessGame.GameNamespace
         public void CheckAndHandlePawnPromotion(Location location)
         {
 
-            if (location.Rank == 0 || location.Rank == Constants.NUMBER_OF_RANKS - 1)
+            if (location.Rank == 0 || location.Rank == Static.NUMBER_OF_RANKS - 1)
             {
                 PieceType pieceType = GUI.ShowCustomPieceTypeDialog();
 
@@ -125,9 +125,9 @@ namespace ChessGame.GameNamespace
         public List<Location> GetAllAttackedLocations()
         {
             List<Location> attackLocations = new();
-            for (int rank = 0; rank < Constants.NUMBER_OF_RANKS; rank++)
+            for (int rank = 0; rank < Static.NUMBER_OF_RANKS; rank++)
             {
-                for (int file = 0; file < Constants.NUMBER_OF_FILES; file++)
+                for (int file = 0; file < Static.NUMBER_OF_FILES; file++)
                 {
                     Piece piece = chessBoard.matrix[rank, file]!;
                     if (piece != null && piece.pieceColor != gameState.playerTurnColor)

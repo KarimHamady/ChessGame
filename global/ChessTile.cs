@@ -7,7 +7,7 @@ namespace ChessGame.global
     {
         Action<Location> OnPressed { get; set; }
         public ChessTile(Location location, Color color, Image image, Action<Location> onPressed) : base() {
-            Size = new Size(Constants.SQUARE_SIZE, Constants.SQUARE_SIZE);
+            Size = new Size(Static.SQUARE_SIZE, Static.SQUARE_SIZE);
             BorderStyle = BorderStyle.FixedSingle;
             SizeMode = PictureBoxSizeMode.Zoom;
             Location = AdaptLocation(location);
@@ -18,7 +18,7 @@ namespace ChessGame.global
             }
 
         private static Point AdaptLocation(Location location) {
-            return new Point(location.File * Constants.SQUARE_SIZE, location.Rank * Constants.SQUARE_SIZE);
+            return new Point(location.File * Static.SQUARE_SIZE, location.Rank * Static.SQUARE_SIZE);
         }
 
         private void AdaptOnPressed(object? sender, EventArgs e)
@@ -27,8 +27,8 @@ namespace ChessGame.global
 
             if (sender is PictureBox clickedPictureBox)
             {
-                clickedLocation.Rank = clickedPictureBox.Location.Y / Constants.SQUARE_SIZE;
-                clickedLocation.File = clickedPictureBox.Location.X / Constants.SQUARE_SIZE;
+                clickedLocation.Rank = clickedPictureBox.Location.Y / Static.SQUARE_SIZE;
+                clickedLocation.File = clickedPictureBox.Location.X / Static.SQUARE_SIZE;
             }
 
             if (clickedLocation.Rank != -1 && clickedLocation.File != -1)
