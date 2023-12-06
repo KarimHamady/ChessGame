@@ -131,7 +131,7 @@ namespace ChessGame.GameNamespace
         }
         public void ShowAvailableMoves(List<Location> possibleMovements)
         {
-            GUI.ColorLocations(possibleMovements, Color.Gold);
+            GUI.ColorLocations(possibleMovements, Color.FromArgb(255, 144, 238, 144)); //173, 216, 230    144, 238, 144     255, 255, 153
         }
         public void HandleCheck()
         {
@@ -141,6 +141,8 @@ namespace ChessGame.GameNamespace
         {
             soundPlayer.PlayCheckmateSound();
             GUI.ShowCheckmateDialog();
+            Application.Restart();
+            Environment.Exit(0);
         }
         public void HandlePromotionRequest()
         {

@@ -59,14 +59,21 @@ namespace ChessGame
         public static void ColorLocations(List<Location> locations, Color color)
         {
             foreach (Location location in locations)
+            {
                 chessboardPictureBoxes[location.Rank, location.File].BackColor = color;
+                chessboardPictureBoxes[location.Rank, location.File].BorderStyle = BorderStyle.FixedSingle;
+
+            }
         }
 
         public static void ResetSquareColors()
         {
             for (int rank = 0; rank < Static.NUMBER_OF_RANKS; rank++)
                 for (int file = 0; file < Static.NUMBER_OF_FILES; file++)
+                {
                     chessboardPictureBoxes[rank, file].BackColor = Static.GetSquareColor(rank, file);
+                    chessboardPictureBoxes[rank, file].BorderStyle = BorderStyle.None;
+                }
         }
     }
 }

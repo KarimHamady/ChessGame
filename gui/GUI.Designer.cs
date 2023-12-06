@@ -33,12 +33,11 @@
             // 
             // GUI
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
-            ClientSize = new Size(148, 3);
+            ClientSize = new Size(886, 376);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(3, 4, 3, 4);
             Name = "GUI";
             Text = "Chess";
             ResumeLayout(false);
