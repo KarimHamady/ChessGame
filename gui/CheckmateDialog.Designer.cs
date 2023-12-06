@@ -1,6 +1,6 @@
 ﻿namespace ChessGame
 {
-    partial class CheckmateWindow
+    partial class CheckmateDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckmateWindow));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckmateDialog));
             pictureBox1 = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -43,14 +43,14 @@
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
-            // CheckmateWindow
+            // CheckmateDialog
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(512, 513);
             Controls.Add(pictureBox1);
-            Name = "CheckmateWindow";
-            Text = "CheckmateWindow";
+            Name = "CheckmateDialog";
+            Text = "CheckmateDialog";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
         }

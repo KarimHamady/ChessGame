@@ -1,13 +1,4 @@
-﻿using ChessGame.Statics;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using ChessGame.Global;
 
 namespace ChessGame
 {
@@ -29,17 +20,17 @@ namespace ChessGame
             AddPieceTypeButton(PieceType.Queen);
 
             // Handle form events as needed
-            this.Text = "Promote to";
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.ControlBox = false;
+            Text = "Promote to";
+            StartPosition = FormStartPosition.CenterScreen;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            ControlBox = false;
         }
 
         private void AddPieceTypeButton(PieceType pieceType)
         {
             var button = new Button
             {
-                Text = Enum.GetName(typeof(Statics.PieceType), pieceType),
+                Text = Enum.GetName(typeof(PieceType), pieceType),
                 Size = new Size(262, 30),
                 Location = new Point(10, 10),  // Adjust button position
             };

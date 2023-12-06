@@ -1,4 +1,6 @@
-﻿namespace ChessGame.Statics
+﻿using ChessGame.Global;
+
+namespace ChessGame.Global
 {
     public static class Static
     {
@@ -19,6 +21,17 @@
                     green: 100,
                     blue: 100
                     );
+        }
+        public static Image? LoadPieceImage(IPiece? piece)
+        {
+            if (piece == null)
+                return null;
+
+            char colorPrefix = piece.PieceColor == Color.White ? 'w' : 'b';
+            string? name = Enum.GetName(typeof(PieceType), piece.PieceType);
+            string imagePath = $"../../../data/{(name != null ? name.ToLower() : "")}_{colorPrefix}.png";
+
+            return File.Exists(imagePath) ? Image.FromFile(imagePath) : null;
         }
     }
 }

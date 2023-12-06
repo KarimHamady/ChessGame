@@ -1,8 +1,8 @@
 ﻿namespace ChessGame
 {
-    public partial class CheckmateWindow : Form
+    public partial class CheckmateDialog : Form
     {
-        public CheckmateWindow()
+        public CheckmateDialog()
         {
             InitializeComponent();
         }

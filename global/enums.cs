@@ -1,4 +1,4 @@
-﻿namespace ChessGame.Statics
+﻿namespace ChessGame.Global
 {
     public enum PieceType
     {

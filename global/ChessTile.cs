@@ -1,9 +1,7 @@
-﻿using ChessGame.Global;
-using ChessGame.Statics;
-
-namespace ChessGame.global
+﻿namespace ChessGame.Global
 {
-    internal class ChessTile : PictureBox
+    internal class LegacyTile : PictureBox { }
+    internal class ChessTile : LegacyTile
     {
         Action<Location> OnPressed { get; set; }
         public ChessTile(Location location, Color color, Image image, Action<Location> onPressed) : base() {

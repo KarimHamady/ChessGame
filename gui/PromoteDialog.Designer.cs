@@ -36,7 +36,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(282, 203);
             Name = "PromoteDialog";
-            Text = "PromoteDialog";
+            Text = "Promote";
             ResumeLayout(false);
         }
 
