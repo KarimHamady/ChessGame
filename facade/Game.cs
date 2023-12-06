@@ -1,8 +1,8 @@
 ﻿using ChessGame.Global;
 using ChessGame.Logic.BoardNamespace;
+using ChessGame.Logic.CastleNamespace;
 using ChessGame.Logic.GameStateNamespace;
 using ChessGame.Logic.PieceNamespace;
-using ChessGame.Logic.CastleNamespace;
 using ChessGame.Statics;
 using ChessGame.strategy;
 
@@ -15,7 +15,8 @@ namespace ChessGame.GameNamespace
         public GameState gameState;
         public Castling castling;
         public static PictureBox[,] chessboardPictureBoxes = new PictureBox[Constants.NUMBER_OF_RANKS, Constants.NUMBER_OF_FILES];
-        private Game() {
+        private Game()
+        {
             chessBoard = new Board();
             gameState = new GameState();
             castling = new Castling();
@@ -82,6 +83,18 @@ namespace ChessGame.GameNamespace
             else if (castling.IsQueenSideCastling(currentLocation, newLocation))
                 MoveRookBesideQueen(newLocation);
         }
+        public void CheckAndHandlePawnPromotion(Location location)
+        {
+
+            if (location.Rank == 0 || location.Rank == Constants.NUMBER_OF_RANKS - 1)
+            {
+                PieceType pieceType = GUI.ShowCustomPieceTypeDialog();
+
+                chessBoard.matrix[location.Rank, location.File] = PieceFactory.CreatePiece(pieceType, location.Rank == 0 ? Color.Black : Color.White);
+                UpdateImageAtLocation(location);
+            }
+        }
+
 
         public void LimitPiecesMovements(Piece clickedPiece, List<Location> possibleMovements)
         {
@@ -118,7 +131,14 @@ namespace ChessGame.GameNamespace
                 {
                     Piece piece = chessBoard.matrix[rank, file]!;
                     if (piece != null && piece.pieceColor != gameState.playerTurnColor)
-                        attackLocations.AddRange(piece.GetAvailableMovesOnBoard(new Location(rank, file)));
+                    {
+                        if (piece is Pawn)
+                            attackLocations.AddRange(((Pawn)piece).GetPawnAttackLocations(new Location(rank, file)));
+                        else
+                            attackLocations.AddRange(piece.GetAvailableMovesOnBoard(new Location(rank, file)));
+
+                        attackLocations.RemoveAll(location => !Game.GetInstance().chessBoard.IsMoveWithinBoard(location));
+                    }
                 }
             }
             return attackLocations;
