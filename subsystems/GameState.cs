@@ -1,4 +1,5 @@
 ﻿using ChessGame.Global;
+using System.Text;
 
 namespace ChessGame.Subsystems
 {
@@ -13,7 +14,7 @@ namespace ChessGame.Subsystems
         public Location checkingLocation;
         public Location whiteKingLocation;
         public Location blackKingLocation;
-
+        public static StringBuilder Moves = new StringBuilder();
         public GameState()
         {
             clickedPieceLocation = new(-1, -1);

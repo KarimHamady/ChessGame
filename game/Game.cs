@@ -1,4 +1,5 @@
 ﻿using ChessGame.Global;
+using ChessGame.StockFishAI;
 using ChessGame.Strategy;
 using ChessGame.Subsystems;
 
@@ -33,11 +34,46 @@ namespace ChessGame.GameNamespace
             GUI.ResetSquareColors();
             PerformStrategy(clickLocation);
         }
-        private void PerformStrategy(Location clickLocation)
+        public void PerformStrategy(Location clickLocation)
         {
             ClickStrategy? clickStrategy = GetStrategy(clickLocation);
+            bool AIenabled = true;
             if (clickStrategy != null)
-                clickStrategy.processClick(clickLocation);
+            {
+                if (clickStrategy is ShowMovesStrategy && AIenabled == true && gameState.playerTurnColor == Color.White)
+                {
+                    string stockfishPath = "../../../../stockfish/stockfish-windows-x86-64-avx2.exe";
+
+                    StockfishCommunicator communicator = new StockfishCommunicator(stockfishPath);
+                }
+                else
+                    clickStrategy.processClick(clickLocation);
+            }
+
+        }
+
+        private string ExtractBestMove(string response)
+        {
+            // Split the response into lines
+            string[] lines = response.Split('\n');
+
+            // Search for the line starting with "bestmove"
+            foreach (string line in lines)
+            {
+                if (line.StartsWith("bestmove"))
+                {
+                    // Extract the best move from the line
+                    string[] parts = line.Split(' ');
+                    if (parts.Length >= 2)
+                    {
+                        // Return the second part, which is the best move
+                        return parts[1];
+                    }
+                }
+            }
+
+            // If no "bestmove" line is found, return an empty string or handle it as needed
+            return string.Empty;
         }
         private ClickStrategy? GetStrategy(Location clickLocation)
         {
@@ -101,8 +137,20 @@ namespace ChessGame.GameNamespace
                 UpdateImageAtLocation(currentLocation);
                 UpdateImageAtLocation(newLocation);
             }
-        }
+            if (gameState.playerTurnColor == Color.White)
+            {
+                GameState.Moves.Append(GetAlgebraicNotationFromLocation(currentLocation.Rank, currentLocation.File));
+                GameState.Moves.Append(GetAlgebraicNotationFromLocation(newLocation.Rank, newLocation.File));
 
+            }
+        }
+        string GetAlgebraicNotationFromLocation(int rank, int file)
+        {
+            // Assuming rank and file are 0-indexed
+            char fileChar = (char)('a' + file);
+            int rankNumber = rank + 1; // Reverse the rank to match standard chess notation
+            return $"{fileChar}{rankNumber}";
+        }
         public List<Location> GetAllAttackedLocations()
         {
             List<Location> attackLocations = new();
