@@ -43,6 +43,8 @@ namespace ChessGame.Strategy
 
                 CheckAndHandleKingCheck(clickLocation);
                 AlternateColors();
+                if (Game.GetInstance().gameState.vsAI == true && Game.GetInstance().gameState.playerTurnColor != Game.GetInstance().gameState.playerChosenColor)
+                    Game.communicator.moveAI();
             }
         }
 
@@ -62,7 +64,8 @@ namespace ChessGame.Strategy
                     if (IsCheckmate())
                     {
                         Game.GetInstance().HandleCheckmate();
-                    } else
+                    }
+                    else
                     {
                         Game.GetInstance().HandleCheck();
                     }

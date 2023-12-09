@@ -1,4 +1,5 @@
 ﻿using ChessGame.Global;
+using ChessGame.StockFishAI;
 using ChessGame.Strategy;
 using ChessGame.Subsystems;
 
@@ -12,6 +13,7 @@ namespace ChessGame.GameNamespace
         public Castling castling;
         public Sound soundPlayer;
         public static PictureBox[,] chessboardPictureBoxes = new PictureBox[Static.NUMBER_OF_RANKS, Static.NUMBER_OF_FILES];
+        public static StockfishCommunicator communicator = new StockfishCommunicator();
         private Game()
         {
             chessBoard = new Board();
@@ -33,11 +35,38 @@ namespace ChessGame.GameNamespace
             GUI.ResetSquareColors();
             PerformStrategy(clickLocation);
         }
-        private void PerformStrategy(Location clickLocation)
+        public void PerformStrategy(Location clickLocation)
         {
-            ClickStrategy? clickStrategy = GetStrategy(clickLocation);
-            if (clickStrategy != null)
-                clickStrategy.processClick(clickLocation);
+            if (gameState.gameStarted)
+            {
+                ClickStrategy? clickStrategy = GetStrategy(clickLocation);
+                if (clickStrategy != null)
+                    clickStrategy.processClick(clickLocation);
+            }
+        }
+
+        private string ExtractBestMove(string response)
+        {
+            // Split the response into lines
+            string[] lines = response.Split('\n');
+
+            // Search for the line starting with "bestmove"
+            foreach (string line in lines)
+            {
+                if (line.StartsWith("bestmove"))
+                {
+                    // Extract the best move from the line
+                    string[] parts = line.Split(' ');
+                    if (parts.Length >= 2)
+                    {
+                        // Return the second part, which is the best move
+                        return parts[1];
+                    }
+                }
+            }
+
+            // If no "bestmove" line is found, return an empty string or handle it as needed
+            return string.Empty;
         }
         private ClickStrategy? GetStrategy(Location clickLocation)
         {
@@ -63,6 +92,7 @@ namespace ChessGame.GameNamespace
                 MoveRookBesideKing(clickedLocation);
             else if (castling.IsQueenSideCastling(previouslyClickedPieceLocation, clickedLocation))
                 MoveRookBesideQueen(clickedLocation);
+            soundPlayer.PlayCastlingSound();
         }
         public void CheckAndHandlePawnPromotion(Location location)
         {
@@ -90,9 +120,8 @@ namespace ChessGame.GameNamespace
         }
         public void MovePiece(Location currentLocation, Location newLocation)
         {
-            soundPlayer.PlayMoveSound();
             IPiece? piece = chessBoard.GetPieceAt(currentLocation);
-
+            IPiece? piece1 = chessBoard.GetPieceAt(newLocation);
             if (piece != null)
             {
                 chessBoard.RemovePieceAt(currentLocation);
@@ -101,8 +130,24 @@ namespace ChessGame.GameNamespace
                 UpdateImageAtLocation(currentLocation);
                 UpdateImageAtLocation(newLocation);
             }
-        }
+            if (gameState.playerTurnColor == Color.White)
+            {
+                GameState.Moves.Append(GetAlgebraicNotationFromLocation(currentLocation.Rank, currentLocation.File));
+                GameState.Moves.Append(GetAlgebraicNotationFromLocation(newLocation.Rank, newLocation.File));
+            }
+            if (piece1 != null)
+                soundPlayer.PlayCaptureSound();
+            else
+                soundPlayer.PlayMoveSound();
 
+        }
+        string GetAlgebraicNotationFromLocation(int rank, int file)
+        {
+            // Assuming rank and file are 0-indexed
+            char fileChar = (char)('a' + file);
+            int rankNumber = rank + 1; // Reverse the rank to match standard chess notation
+            return $"{fileChar}{rankNumber}";
+        }
         public List<Location> GetAllAttackedLocations()
         {
             List<Location> attackLocations = new();
@@ -131,7 +176,7 @@ namespace ChessGame.GameNamespace
         }
         public void ShowAvailableMoves(List<Location> possibleMovements)
         {
-            GUI.ColorLocations(possibleMovements, Color.Gold);
+            GUI.ColorLocations(possibleMovements, Color.FromArgb(255, 144, 238, 144)); //173, 216, 230    144, 238, 144     255, 255, 153
         }
         public void HandleCheck()
         {
@@ -141,6 +186,8 @@ namespace ChessGame.GameNamespace
         {
             soundPlayer.PlayCheckmateSound();
             GUI.ShowCheckmateDialog();
+            Application.Restart();
+            Environment.Exit(0);
         }
         public void HandlePromotionRequest()
         {
