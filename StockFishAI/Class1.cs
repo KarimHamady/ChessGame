@@ -11,8 +11,9 @@ namespace ChessGame.StockFishAI
         private StreamWriter stockfishStreamWriter;
         private StreamReader stockfishStreamReader;
 
-        public StockfishCommunicator(string stockfishPath)
+        public StockfishCommunicator()
         {
+            string stockfishPath = "../../../stockfish/stockfish-windows-x86-64-avx2.exe";
             stockfishProcess = new Process();
             stockfishProcess.StartInfo.FileName = stockfishPath;
             stockfishProcess.StartInfo.UseShellExecute = false;
@@ -32,18 +33,21 @@ namespace ChessGame.StockFishAI
             "Ponder false",
             "Hash 16",
             "MultiPV 1",
-            "Skill Level 20",
             "Move Overhead 30",
-            "Minimum Thinking Time 40",
+            "Minimum Thinking Time 20",
             "Slow Mover 80",
             "UCI_Chess960 false",
-            "UCI_LimitStrength false",
-            "UCI_Elo 2000"
+            "UCI_LimitStrength true",
+            "UCI_Elo 800"
         };
             foreach (var parameter in parameters)
             {
                 SendCommand($"setoption name {parameter}");
             }
+        }
+
+        public void moveAI()
+        {
             string command = $"position fen {BoardToFEN()} moves {GameState.Moves.ToString()}";
             SendCommand(command);
 
@@ -73,8 +77,6 @@ namespace ChessGame.StockFishAI
             new Strategy.MoveStrategy().processClick(toLocation);
             GameState.Moves.Append(" ");
             // GameNamespace.Game.GetInstance().MovePiece(fromLocation, toLocation);
-
-
         }
 
         public void SendCommand(string command)
@@ -151,7 +153,7 @@ namespace ChessGame.StockFishAI
             // Add turn (current side to move)
             fenBuilder.Append(" ");
 
-            fenBuilder.Append("w");
+            fenBuilder.Append($"{(GameNamespace.Game.GetInstance().gameState.playerChosenColor == Color.White ? 'b' : 'w')}");
 
             // Add castling availability
             fenBuilder.Append(" ");
@@ -174,81 +176,6 @@ namespace ChessGame.StockFishAI
 
             return fenBuilder.ToString();
         }
-
-        /*public string BoardToFEN()
-        {
-            StringBuilder fenBuilder = new StringBuilder();
-            int boardSize = 8;
-
-            for (int rank = 0; rank < boardSize; rank++)
-            {
-                int emptySquareCount = 0;
-
-                for (int file = 0; file < boardSize; file++)
-                {
-                    ChessGame.Global.IPiece piece = GameNamespace.Game.GetInstance().chessBoard.matrix[rank, file];
-
-                    if (piece == null)
-                    {
-                        emptySquareCount++;
-                    }
-                    else
-                    {
-                        if (emptySquareCount > 0)
-                        {
-                            fenBuilder.Append(emptySquareCount);
-                            emptySquareCount = 0;
-                        }
-
-                        fenBuilder.Append(GetFENSymbol(piece.PieceType, piece.PieceColor));
-                    }
-                }
-
-                if (emptySquareCount > 0)
-                {
-                    fenBuilder.Append(emptySquareCount);
-                }
-
-                if (rank < boardSize - 1)
-                {
-                    fenBuilder.Append('/');
-                }
-            }
-
-            // Add other FEN components
-
-            // Add turn (current side to move)
-            fenBuilder.Append(" ");
-
-
-            fenBuilder.Append("b");
-
-
-            // Add castling availability
-            fenBuilder.Append(" ");
-
-            string castlingAvailability = "";
-
-            // Add logic to determine castling availability based on your game state
-            // For example, if kingside castling is available for white, and queenside castling is available for black, you would have "Kq" here.
-            // If no castling is available, you can use "-".
-            // Modify this part based on your specific implementation.
-
-            fenBuilder.Append(castlingAvailability);
-
-            // Add en passant square
-            fenBuilder.Append(" ");
-
-            // Add logic to determine en passant square based on your game state
-            // If no en passant square, use "-".
-
-            fenBuilder.Append("-");
-
-            // Add halfmove clock and fullmove number
-            fenBuilder.Append(" 0 1"); // Modify these values based on your specific implementation.
-
-            return fenBuilder.ToString();
-        }*/
 
         public char GetFENSymbol(PieceType pieceType, Color color)
         {
@@ -273,10 +200,6 @@ namespace ChessGame.StockFishAI
             }
         }
 
-
-        // Other methods...
-
-        // Close the Stockfish process when the application is done
         public void Close()
         {
             stockfishStreamWriter.Close();

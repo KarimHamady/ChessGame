@@ -13,6 +13,7 @@ namespace ChessGame.GameNamespace
         public Castling castling;
         public Sound soundPlayer;
         public static PictureBox[,] chessboardPictureBoxes = new PictureBox[Static.NUMBER_OF_RANKS, Static.NUMBER_OF_FILES];
+        public static StockfishCommunicator communicator = new StockfishCommunicator();
         private Game()
         {
             chessBoard = new Board();
@@ -36,20 +37,12 @@ namespace ChessGame.GameNamespace
         }
         public void PerformStrategy(Location clickLocation)
         {
-            ClickStrategy? clickStrategy = GetStrategy(clickLocation);
-            bool AIenabled = true;
-            if (clickStrategy != null)
+            if (gameState.gameStarted)
             {
-                if (clickStrategy is ShowMovesStrategy && AIenabled == true && gameState.playerTurnColor == Color.White)
-                {
-                    string stockfishPath = "../../../../stockfish/stockfish-windows-x86-64-avx2.exe";
-
-                    StockfishCommunicator communicator = new StockfishCommunicator(stockfishPath);
-                }
-                else
+                ClickStrategy? clickStrategy = GetStrategy(clickLocation);
+                if (clickStrategy != null)
                     clickStrategy.processClick(clickLocation);
             }
-
         }
 
         private string ExtractBestMove(string response)
@@ -99,6 +92,7 @@ namespace ChessGame.GameNamespace
                 MoveRookBesideKing(clickedLocation);
             else if (castling.IsQueenSideCastling(previouslyClickedPieceLocation, clickedLocation))
                 MoveRookBesideQueen(clickedLocation);
+            soundPlayer.PlayCastlingSound();
         }
         public void CheckAndHandlePawnPromotion(Location location)
         {
@@ -126,9 +120,8 @@ namespace ChessGame.GameNamespace
         }
         public void MovePiece(Location currentLocation, Location newLocation)
         {
-            soundPlayer.PlayMoveSound();
             IPiece? piece = chessBoard.GetPieceAt(currentLocation);
-
+            IPiece? piece1 = chessBoard.GetPieceAt(newLocation);
             if (piece != null)
             {
                 chessBoard.RemovePieceAt(currentLocation);
@@ -141,8 +134,12 @@ namespace ChessGame.GameNamespace
             {
                 GameState.Moves.Append(GetAlgebraicNotationFromLocation(currentLocation.Rank, currentLocation.File));
                 GameState.Moves.Append(GetAlgebraicNotationFromLocation(newLocation.Rank, newLocation.File));
-
             }
+            if (piece1 != null)
+                soundPlayer.PlayCaptureSound();
+            else
+                soundPlayer.PlayMoveSound();
+
         }
         string GetAlgebraicNotationFromLocation(int rank, int file)
         {

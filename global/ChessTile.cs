@@ -4,7 +4,8 @@
     internal class ChessTile : LegacyTile
     {
         Action<Location> OnPressed { get; set; }
-        public ChessTile(Location location, Color color, Image image, Action<Location> onPressed) : base() {
+        public ChessTile(Location location, Color color, Image image, Action<Location> onPressed) : base()
+        {
             Size = new Size(Static.SQUARE_SIZE, Static.SQUARE_SIZE);
             BorderStyle = BorderStyle.FixedSingle;
             SizeMode = PictureBoxSizeMode.Zoom;
@@ -13,9 +14,10 @@
             Image = image;
             Click += AdaptOnPressed;
             OnPressed = onPressed;
-            }
+        }
 
-        private static Point AdaptLocation(Location location) {
+        private static Point AdaptLocation(Location location)
+        {
             return new Point(location.File * Static.SQUARE_SIZE, location.Rank * Static.SQUARE_SIZE);
         }
 
