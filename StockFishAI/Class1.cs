@@ -38,7 +38,7 @@ namespace ChessGame.StockFishAI
             "Slow Mover 80",
             "UCI_Chess960 false",
             "UCI_LimitStrength true",
-            "UCI_Elo 800"
+            $"UCI_Elo {Static.selectedElo}"
         };
             foreach (var parameter in parameters)
             {
@@ -161,9 +161,13 @@ namespace ChessGame.StockFishAI
 
             // Logic to determine castling availability based on your game state
             // Modify this part based on your specific implementation.
-            string castlingAvailability = "KQkq"; // Assuming all castling is available for both sides initially.
+            char whiteKingSide = GameNamespace.Game.GetInstance().castling.whiteCastlingAllowedKingSide ? 'K' : '-';
+            char whiteQueenSide = GameNamespace.Game.GetInstance().castling.whiteCastlingAllowedQueenSide ? 'Q' : '-';
+            char blackKingSide = GameNamespace.Game.GetInstance().castling.blackCastlingAllowedKingSide ? 'k' : '-';
+            char blackQueenSide = GameNamespace.Game.GetInstance().castling.blackCastlingAllowedQueenSide ? 'q' : '-';
 
-            fenBuilder.Append(castlingAvailability);
+            fenBuilder.Append($"{whiteKingSide}{whiteQueenSide}{blackKingSide}{blackQueenSide}");
+
 
             // Add en passant square
             fenBuilder.Append(" ");

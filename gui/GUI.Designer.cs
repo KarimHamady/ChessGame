@@ -50,15 +50,16 @@
             // 
             trackBar1.LargeChange = 100;
             trackBar1.Location = new Point(15, 464);
-            trackBar1.Maximum = 2000;
-            trackBar1.Minimum = 1000;
+            trackBar1.Maximum = 3190;
+            trackBar1.Minimum = 1320;
             trackBar1.Name = "trackBar1";
             trackBar1.Size = new Size(153, 45);
             trackBar1.SmallChange = 50;
             trackBar1.TabIndex = 2;
             trackBar1.TickFrequency = 100;
-            trackBar1.Value = 1000;
+            trackBar1.Value = 1320;
             trackBar1.Visible = false;
+            trackBar1.Scroll += trackBar1_Scroll;
             // 
             // label1
             // 

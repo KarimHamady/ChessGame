@@ -180,5 +180,9 @@ namespace ChessGame
             }
         }
 
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            Static.selectedElo = trackBar1.Value;
+        }
     }
 }

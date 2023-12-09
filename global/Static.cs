@@ -6,6 +6,7 @@
         public const int NUMBER_OF_FILES = 8;
         public static bool WHITE_PLAYER_UP = false;
         public static int selectedPalette = 0;
+        public static int selectedElo = 1320;
         public static Color[,] colorPalette =
         {
             { Color.FromArgb(255, 240, 217, 181), Color.FromArgb(255, 181, 136, 99) }, // wooden
