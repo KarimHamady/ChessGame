@@ -7,7 +7,6 @@
         public ChessTile(Location location, Color color, Image image, Action<Location> onPressed) : base()
         {
             Size = new Size(Static.SQUARE_SIZE, Static.SQUARE_SIZE);
-            BorderStyle = BorderStyle.FixedSingle;
             SizeMode = PictureBoxSizeMode.Zoom;
             Location = AdaptLocation(location);
             BackColor = color;

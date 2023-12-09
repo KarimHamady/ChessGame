@@ -74,6 +74,7 @@ namespace ChessGame.StockFishAI
             Location toLocation = new Location(toRankIndex, toFileIndex);
 
             new Strategy.ShowMovesStrategy().processClick(fromLocation);
+            GUI.ResetSquareColors();
             new Strategy.MoveStrategy().processClick(toLocation);
             GameState.Moves.Append(" ");
             // GameNamespace.Game.GetInstance().MovePiece(fromLocation, toLocation);

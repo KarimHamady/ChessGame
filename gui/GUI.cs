@@ -12,6 +12,10 @@ namespace ChessGame
         {
             instance = this;
             InitializeComponent();
+            panel1.Size = new Size(Static.SQUARE_SIZE * 8, Static.SQUARE_SIZE * 8);
+            panel2.Location = new Point(Static.SQUARE_SIZE * 8, 0);
+            panel2.Size = new Size(200, Static.SQUARE_SIZE * 8);
+            InitializeButtons();
             DisplayBoard(Static.WHITE_PLAYER_UP);
         }
         public static PieceType ShowPromoteDialog()
@@ -82,16 +86,16 @@ namespace ChessGame
             panel1.Controls.Clear();
             if (radioButton.Checked)
             {
+                Static.WHITE_PLAYER_UP = false;
                 Game.GetInstance().gameState.playerChosenColor = Color.White;
-                DisplayBoard(false);
+                DisplayBoard(Static.WHITE_PLAYER_UP);
             }
             else
             {
+                Static.WHITE_PLAYER_UP = true;
                 Game.GetInstance().gameState.playerChosenColor = Color.Black;
-                DisplayBoard(true);
+                DisplayBoard(Static.WHITE_PLAYER_UP);
             }
-
-
         }
 
         private void radioButton4_CheckedChanged(object sender, EventArgs e)
@@ -137,10 +141,44 @@ namespace ChessGame
             Application.Restart();
             Environment.Exit(0);
         }
-
-        private void trackBar1_Scroll(object sender, EventArgs e)
+        private void button_Click(object sender, EventArgs e)
         {
+            Button clickedButton = sender as Button;
+            if (clickedButton != null)
+            {
 
+                int paletteIndex = Convert.ToInt32(clickedButton.Tag);
+
+                Static.selectedPalette = paletteIndex;
+
+                UpdateChessboardColors();
+            }
         }
+
+        private void UpdateChessboardColors()
+        {
+            for (int rank = 0; rank < Static.NUMBER_OF_RANKS; rank++)
+                for (int file = 0; file < Static.NUMBER_OF_FILES; file++)
+                    chessboardPictureBoxes[rank, file].BackColor = Static.GetSquareColor(rank, file);
+        }
+
+        private void InitializeButtons()
+        {
+            int buttonCount = Static.colorPalette.GetLength(0);
+
+            for (int i = 0; i < buttonCount; i++)
+            {
+                Button paletteButton = new Button();
+                paletteButton.Tag = i;
+                paletteButton.Click += button_Click;
+                paletteButton.BackColor = Static.colorPalette[i, 1];
+
+                paletteButton.Location = new Point(panel2.Width / 2 - 50, 10 + i * 30);
+                paletteButton.Size = new Size(100, 25);
+
+                panel2.Controls.Add(paletteButton);
+            }
+        }
+
     }
 }
