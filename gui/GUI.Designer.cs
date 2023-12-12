@@ -49,22 +49,22 @@
             // trackBar1
             // 
             trackBar1.LargeChange = 100;
-            trackBar1.Location = new Point(14, 343);
-            trackBar1.Maximum = 2000;
-            trackBar1.Minimum = 1000;
+            trackBar1.Location = new Point(15, 464);
+            trackBar1.Maximum = 3190;
+            trackBar1.Minimum = 1320;
             trackBar1.Name = "trackBar1";
             trackBar1.Size = new Size(153, 45);
             trackBar1.SmallChange = 50;
             trackBar1.TabIndex = 2;
             trackBar1.TickFrequency = 100;
-            trackBar1.Value = 1000;
+            trackBar1.Value = 1320;
             trackBar1.Visible = false;
             trackBar1.Scroll += trackBar1_Scroll;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(66, 321);
+            label1.Location = new Point(67, 442);
             label1.Name = "label1";
             label1.Size = new Size(46, 19);
             label1.TabIndex = 8;
@@ -76,7 +76,7 @@
             groupBox3.Controls.Add(radioButton2);
             groupBox3.Controls.Add(radioButton1);
             groupBox3.ForeColor = SystemColors.ButtonFace;
-            groupBox3.Location = new Point(41, 103);
+            groupBox3.Location = new Point(42, 224);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(98, 84);
             groupBox3.TabIndex = 7;
@@ -111,7 +111,7 @@
             groupBox2.Controls.Add(radioButton4);
             groupBox2.Controls.Add(radioButton3);
             groupBox2.ForeColor = SystemColors.ButtonFace;
-            groupBox2.Location = new Point(41, 216);
+            groupBox2.Location = new Point(42, 337);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(98, 85);
             groupBox2.TabIndex = 6;
@@ -167,7 +167,7 @@
             // 
             button1.BackColor = SystemColors.ActiveCaptionText;
             button1.ForeColor = SystemColors.ButtonFace;
-            button1.Location = new Point(41, 405);
+            button1.Location = new Point(42, 515);
             button1.Name = "button1";
             button1.Size = new Size(110, 41);
             button1.TabIndex = 0;
