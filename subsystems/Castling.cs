@@ -4,16 +4,16 @@ namespace ChessGame.Subsystems
 {
     internal class Castling
     {
-        public bool whiteCastlingAllowedKingSide;
-        public bool blackCastlingAllowedKingSide;
-        public bool whiteCastlingAllowedQueenSide;
-        public bool blackCastlingAllowedQueenSide;
+        public bool WhiteCastlingAllowedKingSide {  get; set; }
+        public bool BlackCastlingAllowedKingSide { get; set; }
+        public bool WhiteCastlingAllowedQueenSide { get; set; }
+        public bool BlackCastlingAllowedQueenSide { get; set; }
 
         public Castling() {
-            whiteCastlingAllowedKingSide = true;
-            blackCastlingAllowedKingSide = true;
-            whiteCastlingAllowedQueenSide = true;
-            blackCastlingAllowedQueenSide = true;
+            WhiteCastlingAllowedKingSide = true;
+            BlackCastlingAllowedKingSide = true;
+            WhiteCastlingAllowedQueenSide = true;
+            BlackCastlingAllowedQueenSide = true;
         }
 
         public void UpdateCastlingCondition(Color playerColor, IPiece currentPiece)
@@ -23,13 +23,13 @@ namespace ChessGame.Subsystems
                 King piece = (King)currentPiece;
                 if (playerColor == Color.White)
                 {
-                    whiteCastlingAllowedKingSide = false;
-                    whiteCastlingAllowedQueenSide = false;
+                    WhiteCastlingAllowedKingSide = false;
+                    WhiteCastlingAllowedQueenSide = false;
                 }
                 else
                 {
-                    blackCastlingAllowedKingSide = false;
-                    blackCastlingAllowedQueenSide = false;
+                    BlackCastlingAllowedKingSide = false;
+                    BlackCastlingAllowedQueenSide = false;
                 }
 
             }
@@ -39,16 +39,16 @@ namespace ChessGame.Subsystems
                 if (playerColor == Color.White)
                 {
                     if (piece.RookSide == RookSide.KingSide)
-                        whiteCastlingAllowedKingSide = false;
+                        WhiteCastlingAllowedKingSide = false;
                     else if (piece.RookSide == RookSide.QueenSide)
-                        whiteCastlingAllowedQueenSide = false;
+                        WhiteCastlingAllowedQueenSide = false;
                 }
                 else
                 {
                     if (piece.RookSide == RookSide.KingSide)
-                        blackCastlingAllowedKingSide = false;
+                        BlackCastlingAllowedKingSide = false;
                     else if (piece.RookSide == RookSide.QueenSide)
-                        blackCastlingAllowedQueenSide = false;
+                        BlackCastlingAllowedQueenSide = false;
                 }
             }
         }

@@ -5,20 +5,17 @@ namespace ChessGame
 {
     public partial class GUI : Form
     {
-        private static Form? instance;
-        static PictureBox[,] chessboardPictureBoxes = Game.chessboardPictureBoxes;
+        static PictureBox[,]? ChessboardPictureBoxes { get; set; }
 
         public GUI()
         {
-            instance = this;
+            Game.GetInstance();
+            ChessboardPictureBoxes = Game.ChessboardPictureBoxes;
             InitializeComponent();
             panel1.Size = new Size(Static.SQUARE_SIZE * 8, Static.SQUARE_SIZE * 8);
             panel2.Location = new Point(Static.SQUARE_SIZE * 8, 0);
             panel2.Size = new Size(200, Static.SQUARE_SIZE * 8);
-<<<<<<< HEAD
-=======
             InitializeButtons();
->>>>>>> f1ae4244c9fe610ad147e23f0d7de9dba92ff410
             DisplayBoard(Static.WHITE_PLAYER_UP);
         }
         public static PieceType ShowPromoteDialog()
@@ -45,19 +42,19 @@ namespace ChessGame
 
         public void DisplayBoard(bool isWhiteUp)
         {
-            // Populate the chessboardPictureBoxes array
+            // Populate the ChessboardPictureBoxes array
             for (int rank = 0; rank < Static.NUMBER_OF_RANKS; rank++)
             {
                 for (int file = 0; file < Static.NUMBER_OF_FILES; file++)
                 {
                     Location chessTileLocation = isWhiteUp ? new Location(rank, file) : new Location(7 - rank, 7 - file);
-                    chessboardPictureBoxes[rank, file] = new ChessTile(
+                    ChessboardPictureBoxes[rank, file] = new ChessTile(
                             location: chessTileLocation,
                             color: Static.GetSquareColor(rank, file),
                             image: Game.GetInstance().GetPieceImageAt(rank, file),
                             onPressed: (tileLocation) => Game.GetInstance().HandlePieceClick(isWhiteUp ? tileLocation : tileLocation.Inverted)
                         );
-                    panel1.Controls.Add(chessboardPictureBoxes[rank, file]);
+                    panel1.Controls.Add(ChessboardPictureBoxes[rank, file]);
                 }
             }
         }
@@ -67,8 +64,8 @@ namespace ChessGame
         {
             foreach (Location location in locations)
             {
-                chessboardPictureBoxes[location.Rank, location.File].BackColor = color;
-                chessboardPictureBoxes[location.Rank, location.File].BorderStyle = BorderStyle.FixedSingle;
+                ChessboardPictureBoxes[location.Rank, location.File].BackColor = color;
+                ChessboardPictureBoxes[location.Rank, location.File].BorderStyle = BorderStyle.FixedSingle;
 
             }
         }
@@ -78,8 +75,8 @@ namespace ChessGame
             for (int rank = 0; rank < Static.NUMBER_OF_RANKS; rank++)
                 for (int file = 0; file < Static.NUMBER_OF_FILES; file++)
                 {
-                    chessboardPictureBoxes[rank, file].BackColor = Static.GetSquareColor(rank, file);
-                    chessboardPictureBoxes[rank, file].BorderStyle = BorderStyle.None;
+                    ChessboardPictureBoxes[rank, file].BackColor = Static.GetSquareColor(rank, file);
+                    ChessboardPictureBoxes[rank, file].BorderStyle = BorderStyle.None;
                 }
         }
 
@@ -90,13 +87,13 @@ namespace ChessGame
             if (radioButton.Checked)
             {
                 Static.WHITE_PLAYER_UP = false;
-                Game.GetInstance().gameState.playerChosenColor = Color.White;
+                Game.GetInstance().GameState.PlayerChosenColor = Color.White;
                 DisplayBoard(Static.WHITE_PLAYER_UP);
             }
             else
             {
                 Static.WHITE_PLAYER_UP = true;
-                Game.GetInstance().gameState.playerChosenColor = Color.Black;
+                Game.GetInstance().GameState.PlayerChosenColor = Color.Black;
                 DisplayBoard(Static.WHITE_PLAYER_UP);
             }
         }
@@ -108,13 +105,13 @@ namespace ChessGame
             {
                 label1.Visible = true;
                 trackBar1.Visible = true;
-                Game.GetInstance().gameState.vsAI = true;
+                Game.GetInstance().GameState.VsAI = true;
             }
             else
             {
                 label1.Visible = false;
                 trackBar1.Visible = false;
-                Game.GetInstance().gameState.vsAI = false;
+                Game.GetInstance().GameState.VsAI = false;
             }
 
         }
@@ -122,13 +119,13 @@ namespace ChessGame
         private void button1_Click(object sender, EventArgs e)
         {
             panel2.Controls.Clear();
-            Game.GetInstance().gameState.gameStarted = true;
-            if (Game.GetInstance().gameState.vsAI == true && Game.GetInstance().gameState.playerTurnColor != Game.GetInstance().gameState.playerChosenColor)
-                Game.communicator.moveAI();
-            panel2.Controls.Add(getResignButton());
+            Game.GetInstance().GameState.GameStarted = true;
+            if (Game.GetInstance().GameState.VsAI == true && Game.GetInstance().GameState.PlayerTurnColor != Game.GetInstance().GameState.PlayerChosenColor)
+                Game.Communicator.moveAI();
+            panel2.Controls.Add(GetResignButton());
         }
 
-        private Button getResignButton()
+        private Button GetResignButton()
         {
             Button resignButton = new Button();
             resignButton.Name = "btnResign";
@@ -162,7 +159,7 @@ namespace ChessGame
         {
             for (int rank = 0; rank < Static.NUMBER_OF_RANKS; rank++)
                 for (int file = 0; file < Static.NUMBER_OF_FILES; file++)
-                    chessboardPictureBoxes[rank, file].BackColor = Static.GetSquareColor(rank, file);
+                    ChessboardPictureBoxes[rank, file].BackColor = Static.GetSquareColor(rank, file);
         }
 
         private void InitializeButtons()

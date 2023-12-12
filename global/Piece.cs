@@ -72,33 +72,33 @@ namespace ChessGame.Global
             Location forwardOne = currentLocation + new Location(RankDirection * 1, 0);
             IPiece? piece;
 
-            if (Game.GetInstance().chessBoard.IsMoveWithinBoard(forwardOne))
+            if (Game.GetInstance().ChessBoard.IsMoveWithinBoard(forwardOne))
             {
-                piece = Game.GetInstance().chessBoard.matrix[forwardOne.Rank, forwardOne.File];
+                piece = Game.GetInstance().ChessBoard.Matrix[forwardOne.Rank, forwardOne.File];
                 if (piece == null)
                     pieceMovements.Add(forwardOne); // Move forward
             }
             Location fowardTwo = currentLocation + new Location(RankDirection * 2, 0);
-            if (Game.GetInstance().chessBoard.IsMoveWithinBoard(fowardTwo))
+            if (Game.GetInstance().ChessBoard.IsMoveWithinBoard(fowardTwo))
             {
-                piece = Game.GetInstance().chessBoard.matrix[fowardTwo.Rank, fowardTwo.File];
+                piece = Game.GetInstance().ChessBoard.Matrix[fowardTwo.Rank, fowardTwo.File];
                 if (piece == null && pieceMovements.Count > 0 && (RankDirection * currentLocation.Rank == 1 || currentLocation.Rank * RankDirection == -6))
                     pieceMovements.Add(fowardTwo); // Move forward (initial double move)
             }
             // Pawn can only capture diagonal if there is an opponent piece
             Location diagonalLeft = currentLocation + new Location(RankDirection * 1, -1);
-            if (Game.GetInstance().chessBoard.IsMoveWithinBoard(diagonalLeft))
+            if (Game.GetInstance().ChessBoard.IsMoveWithinBoard(diagonalLeft))
             {
-                piece = Game.GetInstance().chessBoard.matrix[diagonalLeft.Rank, diagonalLeft.File];
-                if (piece != null && piece.PieceColor != Game.GetInstance().gameState.playerTurnColor)
+                piece = Game.GetInstance().ChessBoard.Matrix[diagonalLeft.Rank, diagonalLeft.File];
+                if (piece != null && piece.PieceColor != Game.GetInstance().GameState.PlayerTurnColor)
                     pieceMovements.Add(diagonalLeft); // Capture diagonally left
             }
 
             Location diagonalRight = currentLocation + new Location(RankDirection * 1, 1);
-            if (Game.GetInstance().chessBoard.IsMoveWithinBoard(diagonalRight))
+            if (Game.GetInstance().ChessBoard.IsMoveWithinBoard(diagonalRight))
             {
-                piece = Game.GetInstance().chessBoard.matrix[diagonalRight.Rank, diagonalRight.File];
-                if (piece != null && piece.PieceColor != Game.GetInstance().gameState.playerTurnColor)
+                piece = Game.GetInstance().ChessBoard.Matrix[diagonalRight.Rank, diagonalRight.File];
+                if (piece != null && piece.PieceColor != Game.GetInstance().GameState.PlayerTurnColor)
                     pieceMovements.Add(diagonalRight); // Capture diagonally right
             }
             return pieceMovements;
@@ -159,7 +159,7 @@ namespace ChessGame.Global
             List<Location> pieceMovements = new();
 
             foreach (Location movement in MovementDirection)
-                pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File, Game.GetInstance().GetPlayerColor()));
+                pieceMovements.AddRange(Game.GetInstance().ChessBoard.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File, Game.GetInstance().GetPlayerColor()));
 
             return pieceMovements;
         }
@@ -192,7 +192,7 @@ namespace ChessGame.Global
             List<Location> pieceMovements = new();
 
             foreach (Location movement in MovementDirection)
-                pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File, Game.GetInstance().GetPlayerColor()));
+                pieceMovements.AddRange(Game.GetInstance().ChessBoard.GetAvailableMovesInDirection(currentLocation, movement.Rank, movement.File, Game.GetInstance().GetPlayerColor()));
 
             return pieceMovements;
         }
@@ -215,14 +215,14 @@ namespace ChessGame.Global
         {
             List<Location> pieceMovements = new();
 
-            pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, -1, -1, Game.GetInstance().GetPlayerColor())); // Top-left
-            pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, -1, 1, Game.GetInstance().GetPlayerColor()));  // Top-right
-            pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, 1, -1, Game.GetInstance().GetPlayerColor()));  // Bottom-left
-            pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, 1, 1, Game.GetInstance().GetPlayerColor()));   // Bottom-right
-            pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, 0, -1, Game.GetInstance().GetPlayerColor())); // Left
-            pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, 0, 1, Game.GetInstance().GetPlayerColor()));  // Right
-            pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, -1, 0, Game.GetInstance().GetPlayerColor())); // Up
-            pieceMovements.AddRange(Game.GetInstance().chessBoard.GetAvailableMovesInDirection(currentLocation, 1, 0, Game.GetInstance().GetPlayerColor()));  // Down
+            pieceMovements.AddRange(Game.GetInstance().ChessBoard.GetAvailableMovesInDirection(currentLocation, -1, -1, Game.GetInstance().GetPlayerColor())); // Top-left
+            pieceMovements.AddRange(Game.GetInstance().ChessBoard.GetAvailableMovesInDirection(currentLocation, -1, 1, Game.GetInstance().GetPlayerColor()));  // Top-right
+            pieceMovements.AddRange(Game.GetInstance().ChessBoard.GetAvailableMovesInDirection(currentLocation, 1, -1, Game.GetInstance().GetPlayerColor()));  // Bottom-left
+            pieceMovements.AddRange(Game.GetInstance().ChessBoard.GetAvailableMovesInDirection(currentLocation, 1, 1, Game.GetInstance().GetPlayerColor()));   // Bottom-right
+            pieceMovements.AddRange(Game.GetInstance().ChessBoard.GetAvailableMovesInDirection(currentLocation, 0, -1, Game.GetInstance().GetPlayerColor())); // Left
+            pieceMovements.AddRange(Game.GetInstance().ChessBoard.GetAvailableMovesInDirection(currentLocation, 0, 1, Game.GetInstance().GetPlayerColor()));  // Right
+            pieceMovements.AddRange(Game.GetInstance().ChessBoard.GetAvailableMovesInDirection(currentLocation, -1, 0, Game.GetInstance().GetPlayerColor())); // Up
+            pieceMovements.AddRange(Game.GetInstance().ChessBoard.GetAvailableMovesInDirection(currentLocation, 1, 0, Game.GetInstance().GetPlayerColor()));  // Down
 
             return pieceMovements;
         }
@@ -253,26 +253,26 @@ namespace ChessGame.Global
                 currentLocation + new Location(1, 1)
             };
 
-            if (!Game.GetInstance().gameState.check)
+            if (!Game.GetInstance().GameState.Check)
             {
-                // FIXME Check if a piece is blocking the castling (+1, -1) before allowing (+2, -2) using attackedLocations list
-                if (Game.GetInstance().gameState.playerTurnColor == Color.White)
+                // FIXME Check if a piece is blocking the Castling (+1, -1) before allowing (+2, -2) using attackedLocations list
+                if (Game.GetInstance().GameState.PlayerTurnColor == Color.White)
                 {
-                    if (Game.GetInstance().castling.whiteCastlingAllowedKingSide == true)
+                    if (Game.GetInstance().Castling.WhiteCastlingAllowedKingSide == true)
                         pieceMovements.Add(currentLocation + new Location(0, -2));
-                    if (Game.GetInstance().castling.whiteCastlingAllowedQueenSide == true)
+                    if (Game.GetInstance().Castling.WhiteCastlingAllowedQueenSide == true)
                         pieceMovements.Add(currentLocation + new Location(0, 2));
                 }
-                else if (Game.GetInstance().gameState.playerTurnColor == Color.Black)
+                else if (Game.GetInstance().GameState.PlayerTurnColor == Color.Black)
                 {
-                    if (Game.GetInstance().castling.blackCastlingAllowedKingSide == true)
+                    if (Game.GetInstance().Castling.BlackCastlingAllowedKingSide == true)
                         pieceMovements.Add(currentLocation + new Location(0, -2));
-                    if (Game.GetInstance().castling.blackCastlingAllowedQueenSide == true)
+                    if (Game.GetInstance().Castling.BlackCastlingAllowedQueenSide == true)
                         pieceMovements.Add(currentLocation + new Location(0, 2));
                 }
             }
 
-            if (Game.GetInstance().gameState.playerTurnColor == this.PieceColor)
+            if (Game.GetInstance().GameState.PlayerTurnColor == this.PieceColor)
                 pieceMovements.RemoveAll(location => Game.GetInstance().GetAllAttackedLocations().Contains(location));
             return pieceMovements;
         }

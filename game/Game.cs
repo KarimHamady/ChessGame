@@ -7,28 +7,30 @@ namespace ChessGame.GameNamespace
 {
     internal class Game
     {
-        private static Game? instance;
-        public Board chessBoard;
-        public GameState gameState;
-        public Castling castling;
-        public Sound soundPlayer;
-        public static PictureBox[,] chessboardPictureBoxes = new PictureBox[Static.NUMBER_OF_RANKS, Static.NUMBER_OF_FILES];
-        public static StockfishCommunicator communicator = new StockfishCommunicator();
+        private static Game? Instance { get; set; }
+        public Board ChessBoard { get; set; }
+        public GameState GameState { get; set; }
+        public Castling Castling { get; set; }
+        public Sound SoundPlayer { get; set; }
+        public static PictureBox[,]? ChessboardPictureBoxes { get; set; }
+        public static StockfishCommunicator? Communicator { get; set; }
         private Game()
         {
-            chessBoard = new Board();
-            gameState = new GameState();
-            castling = new Castling();
-            soundPlayer = new Sound();
+            ChessBoard = new Board();
+            GameState = new GameState();
+            Castling = new Castling();
+            SoundPlayer = new Sound();
+            ChessboardPictureBoxes = new PictureBox[Static.NUMBER_OF_RANKS, Static.NUMBER_OF_FILES];
+            Communicator = new StockfishCommunicator();
         }
         public static Game GetInstance()
         {
-            instance ??= new Game();
-            return instance;
+            Instance ??= new Game();
+            return Instance;
         }
         public void UpdateImageAtLocation(Location location)
         {
-            chessboardPictureBoxes[location.Rank, location.File].Image = Static.LoadPieceImage(chessBoard.matrix[location.Rank, location.File]);
+            ChessboardPictureBoxes[location.Rank, location.File].Image = Static.LoadPieceImage(ChessBoard.Matrix[location.Rank, location.File]);
         }
         public void HandlePieceClick(Location clickLocation)
         {
@@ -37,11 +39,11 @@ namespace ChessGame.GameNamespace
         }
         public void PerformStrategy(Location clickLocation)
         {
-            if (gameState.gameStarted)
+            if (GameState.GameStarted)
             {
                 ClickStrategy? clickStrategy = GetStrategy(clickLocation);
                 if (clickStrategy != null)
-                    clickStrategy.processClick(clickLocation);
+                    clickStrategy.ProcessClick(clickLocation);
             }
         }
 
@@ -70,29 +72,29 @@ namespace ChessGame.GameNamespace
         }
         private ClickStrategy? GetStrategy(Location clickLocation)
         {
-            IPiece? clickedPiece = chessBoard.GetPieceAt(clickLocation);
+            IPiece? clickedPiece = ChessBoard.GetPieceAt(clickLocation);
 
-            if (clickedPiece != null && clickedPiece.PieceColor == gameState.playerTurnColor)
+            if (clickedPiece != null && clickedPiece.PieceColor == GameState.PlayerTurnColor)
                 return new ShowMovesStrategy();
-            else if (gameState.clickedPieceLocation.Rank != -1 && gameState.clickedPieceLocation.File != -1)
+            else if (GameState.ClickedPieceLocation.Rank != -1 && GameState.ClickedPieceLocation.File != -1)
                 return new MoveStrategy();
             return null;
         }
         private void MoveRookBesideKing(Location kingLocation)
         {
-            MovePiece(castling.GetRookLocationFromCastlingSide(gameState.playerTurnColor, CastlingSide.KingSide), new Location(kingLocation.Rank, kingLocation.File + 1));
+            MovePiece(Castling.GetRookLocationFromCastlingSide(GameState.PlayerTurnColor, CastlingSide.KingSide), new Location(kingLocation.Rank, kingLocation.File + 1));
         }
         private void MoveRookBesideQueen(Location kingLocation)
         {
-            MovePiece(castling.GetRookLocationFromCastlingSide(gameState.playerTurnColor, CastlingSide.QueenSide), new Location(kingLocation.Rank, kingLocation.File - 1));
+            MovePiece(Castling.GetRookLocationFromCastlingSide(GameState.PlayerTurnColor, CastlingSide.QueenSide), new Location(kingLocation.Rank, kingLocation.File - 1));
         }
         public void CheckAndHandleCastling(Location previouslyClickedPieceLocation, Location clickedLocation)
         {
-            if (castling.IsKingSideCastling(previouslyClickedPieceLocation, clickedLocation))
+            if (Castling.IsKingSideCastling(previouslyClickedPieceLocation, clickedLocation))
                 MoveRookBesideKing(clickedLocation);
-            else if (castling.IsQueenSideCastling(previouslyClickedPieceLocation, clickedLocation))
+            else if (Castling.IsQueenSideCastling(previouslyClickedPieceLocation, clickedLocation))
                 MoveRookBesideQueen(clickedLocation);
-            soundPlayer.PlayCastlingSound();
+            SoundPlayer.PlayCastlingSound();
         }
         public void CheckAndHandlePawnPromotion(Location location)
         {
@@ -101,44 +103,44 @@ namespace ChessGame.GameNamespace
             {
                 PieceType pieceType = GUI.ShowPromoteDialog();
 
-                chessBoard.matrix[location.Rank, location.File] = PiecePromoter.CreatePiece(pieceType, location.Rank == 0 ? Color.Black : Color.White);
+                ChessBoard.Matrix[location.Rank, location.File] = PiecePromoter.CreatePiece(pieceType, location.Rank == 0 ? Color.Black : Color.White);
                 UpdateImageAtLocation(location);
             }
         }
         public void LimitPiecesMovements(IPiece clickedPiece, List<Location> possibleMovements)
         {
             if (clickedPiece is not King)
-                chessBoard.RemoveInvalidMovesForCheck(possibleMovements, gameState.checkingLocation, gameState.playerTurnColor == Color.White ? gameState.whiteKingLocation : gameState.blackKingLocation, gameState.playerTurnColor);
+                ChessBoard.RemoveInvalidMovesForCheck(possibleMovements, GameState.CheckingLocation, GameState.PlayerTurnColor == Color.White ? GameState.WhiteKingLocation : GameState.BlackKingLocation, GameState.PlayerTurnColor);
             else
                 possibleMovements.RemoveAll(location => GetAllAttackedLocations().Contains(location));
         }
 
         public Image? GetPieceImageAt(int rank, int file)
         {
-            IPiece? piece = chessBoard.GetPieceAt(new Location(rank, file));
+            IPiece? piece = ChessBoard.GetPieceAt(new Location(rank, file));
             return piece != null ? Static.LoadPieceImage(piece) : null;
         }
         public void MovePiece(Location currentLocation, Location newLocation)
         {
-            IPiece? piece = chessBoard.GetPieceAt(currentLocation);
-            IPiece? piece1 = chessBoard.GetPieceAt(newLocation);
+            IPiece? piece = ChessBoard.GetPieceAt(currentLocation);
+            IPiece? piece1 = ChessBoard.GetPieceAt(newLocation);
             if (piece != null)
             {
-                chessBoard.RemovePieceAt(currentLocation);
-                chessBoard.AddPieceAt(piece, newLocation);
+                ChessBoard.RemovePieceAt(currentLocation);
+                ChessBoard.AddPieceAt(piece, newLocation);
 
                 UpdateImageAtLocation(currentLocation);
                 UpdateImageAtLocation(newLocation);
             }
-            if (gameState.playerTurnColor == Color.White)
+            if (GameState.PlayerTurnColor == Color.White)
             {
                 GameState.Moves.Append(GetAlgebraicNotationFromLocation(currentLocation.Rank, currentLocation.File));
                 GameState.Moves.Append(GetAlgebraicNotationFromLocation(newLocation.Rank, newLocation.File));
             }
             if (piece1 != null)
-                soundPlayer.PlayCaptureSound();
+                SoundPlayer.PlayCaptureSound();
             else
-                soundPlayer.PlayMoveSound();
+                SoundPlayer.PlayMoveSound();
 
         }
         string GetAlgebraicNotationFromLocation(int rank, int file)
@@ -155,15 +157,15 @@ namespace ChessGame.GameNamespace
             {
                 for (int file = 0; file < Static.NUMBER_OF_FILES; file++)
                 {
-                    IPiece? piece = chessBoard.matrix[rank, file]!;
-                    if (piece != null && piece.PieceColor != gameState.playerTurnColor)
+                    IPiece? piece = ChessBoard.Matrix[rank, file]!;
+                    if (piece != null && piece.PieceColor != GameState.PlayerTurnColor)
                     {
                         if (piece is Pawn)
                             attackLocations.AddRange(((Pawn)piece).GetPawnAttackLocations(new Location(rank, file)));
                         else
                             attackLocations.AddRange(piece.GetAvailableMovesOnBoard(new Location(rank, file)));
 
-                        attackLocations.RemoveAll(location => !Game.GetInstance().chessBoard.IsMoveWithinBoard(location));
+                        attackLocations.RemoveAll(location => !Game.GetInstance().ChessBoard.IsMoveWithinBoard(location));
                     }
                 }
             }
@@ -172,7 +174,7 @@ namespace ChessGame.GameNamespace
 
         public Color GetPlayerColor()
         {
-            return gameState.playerTurnColor;
+            return GameState.PlayerTurnColor;
         }
         public void ShowAvailableMoves(List<Location> possibleMovements)
         {
@@ -180,11 +182,11 @@ namespace ChessGame.GameNamespace
         }
         public void HandleCheck()
         {
-            soundPlayer.PlayCheckSound();
+            SoundPlayer.PlayCheckSound();
         }
         public void HandleCheckmate()
         {
-            soundPlayer.PlayCheckmateSound();
+            SoundPlayer.PlayCheckmateSound();
             GUI.ShowCheckmateDialog();
             Application.Restart();
             Environment.Exit(0);

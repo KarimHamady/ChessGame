@@ -73,9 +73,9 @@ namespace ChessGame.StockFishAI
             Location fromLocation = new Location(fromRankIndex, fromFileIndex);
             Location toLocation = new Location(toRankIndex, toFileIndex);
 
-            new Strategy.ShowMovesStrategy().processClick(fromLocation);
+            new Strategy.ShowMovesStrategy().ProcessClick(fromLocation);
             GUI.ResetSquareColors();
-            new Strategy.MoveStrategy().processClick(toLocation);
+            new Strategy.MoveStrategy().ProcessClick(toLocation);
             GameState.Moves.Append(" ");
             // GameNamespace.Game.GetInstance().MovePiece(fromLocation, toLocation);
         }
@@ -120,7 +120,7 @@ namespace ChessGame.StockFishAI
 
                 for (int file = 0; file < boardSize; file++)
                 {
-                    ChessGame.Global.IPiece piece = GameNamespace.Game.GetInstance().chessBoard.matrix[rank, file];
+                    ChessGame.Global.IPiece piece = GameNamespace.Game.GetInstance().ChessBoard.Matrix[rank, file];
 
                     if (piece == null)
                     {
@@ -154,17 +154,17 @@ namespace ChessGame.StockFishAI
             // Add turn (current side to move)
             fenBuilder.Append(" ");
 
-            fenBuilder.Append($"{(GameNamespace.Game.GetInstance().gameState.playerChosenColor == Color.White ? 'b' : 'w')}");
+            fenBuilder.Append($"{(GameNamespace.Game.GetInstance().GameState.PlayerChosenColor == Color.White ? 'b' : 'w')}");
 
-            // Add castling availability
+            // Add Castling availability
             fenBuilder.Append(" ");
 
-            // Logic to determine castling availability based on your game state
+            // Logic to determine Castling availability based on your game state
             // Modify this part based on your specific implementation.
-            char whiteKingSide = GameNamespace.Game.GetInstance().castling.whiteCastlingAllowedKingSide ? 'K' : '-';
-            char whiteQueenSide = GameNamespace.Game.GetInstance().castling.whiteCastlingAllowedQueenSide ? 'Q' : '-';
-            char blackKingSide = GameNamespace.Game.GetInstance().castling.blackCastlingAllowedKingSide ? 'k' : '-';
-            char blackQueenSide = GameNamespace.Game.GetInstance().castling.blackCastlingAllowedQueenSide ? 'q' : '-';
+            char whiteKingSide = GameNamespace.Game.GetInstance().Castling.WhiteCastlingAllowedKingSide ? 'K' : '-';
+            char whiteQueenSide = GameNamespace.Game.GetInstance().Castling.WhiteCastlingAllowedQueenSide ? 'Q' : '-';
+            char blackKingSide = GameNamespace.Game.GetInstance().Castling.BlackCastlingAllowedKingSide ? 'k' : '-';
+            char blackQueenSide = GameNamespace.Game.GetInstance().Castling.BlackCastlingAllowedQueenSide ? 'q' : '-';
 
             fenBuilder.Append($"{whiteKingSide}{whiteQueenSide}{blackKingSide}{blackQueenSide}");
 

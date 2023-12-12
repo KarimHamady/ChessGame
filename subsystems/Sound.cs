@@ -4,18 +4,26 @@ namespace ChessGame.Subsystems
 {
     internal class Sound
     {
-        SoundPlayer moveSound = new("../../../data/move_sound.wav");
-        SoundPlayer checkSound = new("../../../data/check_sound.wav");
-        SoundPlayer checkmateSound = new("../../../data/checkmate_sound.wav");
-        SoundPlayer castlingSound = new("../../../data/castling_sound.wav");
-        SoundPlayer captureSound = new("../../../data/capture_sound.wav");
-        SoundPlayer startSound = new("../../../data/game_start.wav");
-
-        public void PlayMoveSound() { moveSound.Play(); }
-        public void PlayCheckSound() { checkSound.Play(); }
-        public void PlayCheckmateSound() { checkmateSound.Play(); }
-        public void PlayCastlingSound() { castlingSound.Play(); }
-        public void PlayCaptureSound() { captureSound.Play(); }
-        public void PlayStartSound() { startSound.Play(); }
+        SoundPlayer MoveSound {  get; set; }
+        SoundPlayer CheckSound { get; set; }
+        SoundPlayer CheckmateSound { get; set; }
+        SoundPlayer CastlingSound { get; set; }
+        SoundPlayer CaptureSound { get; set; }
+        SoundPlayer StartSound { get; set; }
+        public Sound()
+        {
+            MoveSound = new("../../../data/move_sound.wav");
+            CheckSound = new("../../../data/check_sound.wav");
+            CheckmateSound = new("../../../data/checkmate_sound.wav");
+            CastlingSound = new("../../../data/castling_sound.wav");
+            CaptureSound = new("../../../data/capture_sound.wav");
+            StartSound = new("../../../data/game_start.wav");
+        }
+        public void PlayMoveSound() { MoveSound.Play(); }
+        public void PlayCheckSound() { CheckSound.Play(); }
+        public void PlayCheckmateSound() { CheckmateSound.Play(); }
+        public void PlayCastlingSound() { CastlingSound.Play(); }
+        public void PlayCaptureSound() { CaptureSound.Play(); }
+        public void PlayStartSound() { StartSound.Play(); }
     }
 }
