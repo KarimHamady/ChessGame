@@ -10,6 +10,7 @@ When you start playing, you have 2 options:
 - Preview strategy (Click on piece to check available moves):
 
 ![image](https://github.com/user-attachments/assets/9d47409d-b833-4f55-87d3-c392fa9d46a9)
+
 - Move strategy (Click on new location to move):
 
 ![image](https://github.com/user-attachments/assets/1c33be58-4222-4602-a662-35a6d671feed)
@@ -31,13 +32,16 @@ The game includes the following options:
 - Check:
 
 ![image](https://github.com/user-attachments/assets/0763dd61-e091-4904-b9d0-6d2afa6c466a)
+
 with the following moves available when the king is under check:
 1) Move a piece to block the path between the piece checking (queen in this case) and the king. In case of a knight, this move doesn't apply
 
 ![image](https://github.com/user-attachments/assets/cdb54755-724a-4f6b-bd6c-9335a840dacb)
+
 2) Move the king in a position not attacked by any piece:
 
 ![image](https://github.com/user-attachments/assets/a3315d77-56aa-48e3-a17e-900b6afcf86c)
+
 3) Taking the checking piece:
 
 ![image](https://github.com/user-attachments/assets/0995158a-7f84-43df-9ad4-1f68e42a2e62)
