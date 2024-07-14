@@ -57,4 +57,5 @@ Some additional options that can be implemented:
 - Discovered check
 - Double check
 Also note that in some special cases, the game still have some glitches and not all options are mapped from the AI
+
 DISCLAIMER: Source code for AI is from the repo: https://github.com/official-stockfish/Stockfish . In this repo, the link between the AI move and our code is done.
